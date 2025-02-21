@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Post = require("./post.modal");
 
 const schema = new mongoose.Schema(
   {
@@ -7,6 +8,9 @@ const schema = new mongoose.Schema(
     password: { type: String, require: true, select: false },
     profilePic: { type: String, require: true },
     userLoginSecretKey: { type: String, select: false },
+    follower:[{type:String}],
+    following:[{type:String}],
+    posts:[{type:mongoose.Schema.Types.ObjectId, ref:Post}];
   },
   { timestamps: true }
 );

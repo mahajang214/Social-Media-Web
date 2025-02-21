@@ -24,7 +24,7 @@ web.use(cors({
 
 
 web.use("/api/auth",authRoutes);
-// web.use("api/main",mainRoute);
+web.use("api/main",mainRoute);
 web.use("/api/chat",chatRoute);
 
 

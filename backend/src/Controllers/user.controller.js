@@ -32,7 +32,7 @@ module.exports = {
   },
   login: async (req, res) => {
     const { email, password, userLoginSecretKey } = req.body;
-    if (!email || !password ||userLoginSecretKey) {
+    if (!email || !password || userLoginSecretKey) {
       res.status(400).json({ error: "All fields are required" });
       return;
     }
@@ -101,19 +101,21 @@ module.exports = {
       const hashLoginSecret = await bcrypt.hash(createLoginSecret, 20);
       const user = await User.findByIdAndUpdate(
         { _id: userId },
-        { userLoginSecretKey: hashLoginSecret },{new:true}
+        { userLoginSecretKey: hashLoginSecret },
+        { new: true }
       );
       if (!user) {
         return res.status(500).json({ error: "user data is not updated" });
       }
       // user.save();
       // console.log("hash : ", hashLoginSecret);
-     return res
+      return res
         .status(200)
-        .json({ msg: "Login secret key generated",hashLoginSecret });
+        .json({ msg: "Login secret key generated", hashLoginSecret });
     } catch (error) {
       console.log(error);
-     return res.status(500).json({ error: "Login secret is not generated" });
+      return res.status(500).json({ error: "Login secret is not generated" });
     }
   },
+  
 };

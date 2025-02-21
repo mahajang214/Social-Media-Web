@@ -1,5 +1,5 @@
 const express =require('express');
-const { register, login, logout, setProfilePic, setLoginKey } = require('../Controllers/user.controller');
+const { register, login, logout, setProfilePic, setLoginKey, followUser } = require('../Controllers/user.controller');
 const { protectedRoute } = require('../Middlewares/protected');
 
 
@@ -10,6 +10,9 @@ router.post('/login',login);
 router.get('/logout',logout);
 router.post('/setprofilepic',protectedRoute,setProfilePic)
 router.get('/setloginkey',protectedRoute,setLoginKey);
+
+
+
 
 
 // set profile  kaam baki he
