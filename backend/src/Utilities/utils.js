@@ -8,6 +8,13 @@ module.exports={
         }
         
         return result;
+    },
+    webRes:({no,err,succ,res,msg,package})=>{
+        if (succ) {
+            res.status(no).json({msg:`${msg}`,package});
+        }
+        res.status(no).json({error:`${msg}`,package});
+
     }
     
 }

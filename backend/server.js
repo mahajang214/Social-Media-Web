@@ -5,6 +5,7 @@ const cookieParser=require('cookie-parser');
 const cors=require('cors');
 const authRoutes=require('../backend/src/Routes/authRoutes');
 const mainRoute=require('./src/Routes/mainRoutes');
+const chatRoute=require('./src/Routes/chatRoutes');
 const connectDB=require('./src/Database/db');
 
 
@@ -24,7 +25,7 @@ web.use(cors({
 
 web.use("/api/auth",authRoutes);
 // web.use("api/main",mainRoute);
-// web.use("api/chat",chatRoute);
+web.use("/api/chat",chatRoute);
 
 
 
