@@ -32,10 +32,6 @@ module.exports = {
   },
   login: async (req, res) => {
     const { email, password, userLoginSecretKey } = req.body;
-    if (!email || !password || userLoginSecretKey) {
-      res.status(400).json({ error: "All fields are required" });
-      return;
-    }
     if (userLoginSecretKey) {
       try {
         const user = await User.find({ userLoginSecretKey });
@@ -49,7 +45,12 @@ module.exports = {
       } catch (error) {
         console.log(error);
         res.status(400).json({ error: "Something went wrong" });
+        return;
       }
+    }
+    if (!email || !password) {
+      res.status(400).json({ error: "All fields are required" });
+      return;
     }
     try {
       const user = await User.findOne({

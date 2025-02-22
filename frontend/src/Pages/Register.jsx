@@ -34,13 +34,13 @@ function Register() {
     //     // }
     // }
 
-    useEffect(() => {
-        if (loading) {
-            setTimeout(() => {
-                setLoading(false);
-            }, 5000)
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (loading) {
+    //         setTimeout(() => {
+    //             setLoading(false);
+    //         }, 5000)
+    //     }
+    // }, [])
 
     useGSAP(() => {
         gsap.from('#d', {
