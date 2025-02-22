@@ -14,7 +14,7 @@ const postSchema =new mongoose.Schema(
     },
     like: [{ type: String }],
     comments: [{ type: String }],
-    user: { type: mongoose.Schema.Types.ObjectId, ref: User, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timeStamps: true }
 );
