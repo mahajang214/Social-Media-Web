@@ -1,36 +1,67 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import Loading from '../Components/Loading';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 function Login() {
     const [loginData, setLoginData] = useState({ email: '', password: "" });
     const [loading, setLoading] = useState(false);
     const [clickedSecret, setClickedSecret] = useState(false);
     const [secretKey, setSecretKey] = useState('');
+    const navigate=useNavigate();
 
+
+    
     useGSAP(() => {
         gsap.from('#d', {
             opacity: 1,
             duration: .5,
             y: -100,
             x: -500,
-            stagger: .2
+            stagger: .2,
+            // repeat: loading ? -1 : 0
         })
+       
         gsap.from('#p', {
             opacity: 1,
             duration: .5,
             y: -100,
             x: 500,
-            stagger: .2
+            stagger: .2,
+            // repeat: loading ? -1 : 0
         });
         gsap.from('#form', {
             opacity: 0,
             duration: .8,
             scale: 0
         })
-     
-    })
+    });
+
+    useEffect(()=>{
+        if(loading){
+            gsap.from('#d', {
+                opacity: 1,
+                duration: .5,
+                y: -100,
+                x: -500,
+                stagger: .2,
+                repeat:-1
+                // repeat: loading ? -1 : 0
+            })
+            gsap.from('#p', {
+                opacity: 1,
+                duration: .5,
+                y: -100,
+                x: 500,
+                stagger: .2,
+                repeat:-1
+                // repeat: loading ? -1 : 0
+            });
+
+        }
+    },[loading]);
+    
     const fillData = (e) => {
         setLoginData({ ...loginData, [e.target.name]: e.target.value })
     }
@@ -41,6 +72,7 @@ function Login() {
             const send=await axios.post(`${import.meta.env.VITE_URL}/api/auth/login`,{userLoginSecretKey:secretKey});
             console.log(send.data);
             setLoading(false);
+            navigate('/');
             return;
         }
         try {
@@ -48,6 +80,7 @@ function Login() {
             const send=await axios.post(`${import.meta.env.VITE_URL}/api/auth/login`,{email:loginData.email,password:loginData.password});
             console.log(send.data);
             setLoading(false);
+            navigate('/');
             return;
         } catch (error) {
             console.log(error);

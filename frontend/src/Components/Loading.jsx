@@ -14,8 +14,8 @@ function Loading() {
         // });
         timeline.to('.line', {
             scaleY: 3,
-            stagger: .5,
-            duration: .5,
+            stagger: .3,
+            duration: .3,
             yoyo: true,
             // repeat: -1,
             opacity: 1,

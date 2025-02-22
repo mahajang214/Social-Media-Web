@@ -16,31 +16,7 @@ function Register() {
 
 
 
-    // const fillData = (e) => {
-    //     setRegistrationData({
-    //         [e.target.name]: e.target.value
-    //     });
-    //     // console.log(registrationData.password.includes("1"||"2"||"3"||"4"||"5"||"6"||"7"||"8"||"9"||"0"));
-    //     // console.log(validate.n===false);
-
-
-    //     //  }   1||2||3||4||5||6||7||8||9||0
-    //     // if (validate.n === false) {
-    //     //     if (registrationData.password.includes("1" || "2" || "3" || "4" || "5" || "6" || "7" || "8" || "9" || "0")) {
-    //     //          document.querySelector("#checkbox-num").click();
-    //     //          return setValidate({ n: true });
-    //     //     }
-
-    //     // }
-    // }
-
-    // useEffect(() => {
-    //     if (loading) {
-    //         setTimeout(() => {
-    //             setLoading(false);
-    //         }, 5000)
-    //     }
-    // }, [])
+ 
 
     useGSAP(() => {
         gsap.from('#d', {
@@ -62,12 +38,30 @@ function Register() {
             duration: .8,
             scale: 0
         })
-        // gsap.to('#form',{
-        //     opacity:1,
-        //     duration:.8,
-        //     scale:1
-        // })
     })
+    useEffect(()=>{
+        if(loading){
+            gsap.from('#d', {
+                opacity: 1,
+                duration: .5,
+                y: -100,
+                x: -500,
+                stagger: .2,
+                repeat:-1
+                // repeat: loading ? -1 : 0
+            })
+            gsap.from('#p', {
+                opacity: 1,
+                duration: .5,
+                y: -100,
+                x: 500,
+                stagger: .2,
+                repeat:-1
+                // repeat: loading ? -1 : 0
+            });
+
+        }
+    },[loading]);
 
     const registerUser = async (e) => {
         e.preventDefault();
