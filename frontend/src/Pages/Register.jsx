@@ -4,6 +4,8 @@ import gsap from 'gsap';
 import axios from 'axios';
 import Loading from "../Components/Loading.jsx";
 import { useNavigate } from "react-router-dom";
+import { motion } from 'motion/react';
+
 function Register() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -12,11 +14,11 @@ function Register() {
     const [passwordWriting, setPasswordWriting] = useState(false);
     const elRef = useRef(null);
     const [loading, setLoading] = useState(false);
-    const navigate=useNavigate();
+    const navigate = useNavigate();
 
 
 
- 
+
 
     useGSAP(() => {
         gsap.from('#d', {
@@ -39,15 +41,15 @@ function Register() {
             scale: 0
         })
     })
-    useEffect(()=>{
-        if(loading){
+    useEffect(() => {
+        if (loading) {
             gsap.from('#d', {
                 opacity: 1,
                 duration: .5,
                 y: -100,
                 x: -500,
                 stagger: .2,
-                repeat:-1
+                repeat: -1
                 // repeat: loading ? -1 : 0
             })
             gsap.from('#p', {
@@ -56,12 +58,12 @@ function Register() {
                 y: -100,
                 x: 500,
                 stagger: .2,
-                repeat:-1
+                repeat: -1
                 // repeat: loading ? -1 : 0
             });
 
         }
-    },[loading]);
+    }, [loading]);
 
     const registerUser = async (e) => {
         e.preventDefault();
@@ -168,15 +170,52 @@ function Register() {
                     <br />
 
                     {passwordWriting &&
-                        (< ><div id='validation-c' className='validations w-full px-5 flex items-center gap-3 mt-2 text-red-500'><li><p>Password must be 8 characters long</p></li></div>
-                            <div id='validation-sc' className='validations w-full px-5 flex items-center gap-3 mt-2 text-red-500'><li><p>Password must be include 2 special character </p></li></div>
-                            <div id='validation-n' className='validations w-full px-5 flex items-center gap-3 mt-2 text-red-500'><li><p>Password must be includes 2 number </p></li></div></>)}
+                        (< ><motion.div initial={{
+                            x: 0,
+                            y: -50,
+                            scale: .5,
+                            opacity: 0
+                        }}
+                            animate={{
+                                x: 0,
+                                y: 0,
+                                scale: 1,
+                                opacity: 1
+                            }}
+                            transition={{ duration: .5 }}
+                            id='validation-c' className='validations w-full px-5 flex items-center gap-3 mt-2 text-red-500'><li><p>Password must be 8 characters long</p></li></motion.div>
+                            <motion.div initial={{
+                                x: 0,
+                                y: -50,
+                                scale: .5,
+                                opacity: 0
+                            }}
+                                animate={{
+                                    x: 0,
+                                    y: 0,
+                                    scale: 1,
+                                    opacity: 1
+                                }}
+                                transition={{ duration: .5 }} id='validation-sc' className='validations w-full px-5 flex items-center gap-3 mt-2 text-red-500'><li><p>Password must be include 2 special character </p></li></motion.div>
+                            <motion.div initial={{
+                                x: 0,
+                                y: -50,
+                                scale: .5,
+                                opacity: 0
+                            }}
+                                animate={{
+                                    x: 0,
+                                    y: 0,
+                                    scale: 1,
+                                    opacity: 1
+                                }}
+                                transition={{ duration: .5 }} id='validation-n' className='validations w-full px-5 flex items-center gap-3 mt-2 text-red-500'><li><p>Password must be includes 2 number </p></li></motion.div></>)}
 
 
-                    {loading ? <Loading /> : <button className='w-full outline-none cursor-pointer active:scale-95 text-2xl px-5 font-bold py-2 rounded-md bg-[#ffffff46] mt-4 '>
+                    {loading ? <Loading /> : <button className='w-full bg-red-500 outline-none cursor-pointer active:scale-95 text-2xl px-5 font-bold py-2 rounded-md  mt-4 '>
                         Register
                     </button>}
-                    
+
                 </form>
             </div>
             <div className='w-1/4 h-full bg-[#1a1a19c8] overflow-hidden py-4'>

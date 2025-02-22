@@ -1,7 +1,9 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const User = require("../Modals/user.modal");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { secretKey } = require("../../services");
+// const { secretKey } = require("../../services");
 const { generateRandomString } = require("../Utilities/utils");
 module.exports = {
   register: async (req, res) => {
@@ -35,7 +37,8 @@ module.exports = {
     if (userLoginSecretKey) {
       try {
         const user = await User.find({ userLoginSecretKey });
-        const token = jwt.sign({ _id: user._id }, secretKey);
+
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY);
         res.cookie("token", token, {
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000,
@@ -57,13 +60,38 @@ module.exports = {
         email,
       }).select(["password", "email", "_id"]);
       // console.log("password : ",user.password);
-
+      // console.log("User id", user._id);
+      // console.log(process.env.JWT_SECRET_KEY);
       const comparePass = await bcrypt.compare(password, user.password);
-      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY);
-      res.cookie("token", token, {
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY,{ expiresIn: '7d' });
+      console.log("token : ", JSON.stringify(token));
+      
+      res.cookie("token", JSON.stringify(token), {
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+
+        // 1 day
       });
+      // const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
+      //   expiresIn: "1d",
+      // });
+      // res.cookie('token', token, {
+      //   httpOnly: true,
+      //   maxAge: 24 * 60 * 60 * 1000,
+      // });
+
+      // const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
+      //   expiresIn: "1d",
+      // });
+      // res.cookie("token", token, {
+      //   httpOnly: true,
+      //   maxAge: 86400000, //24 * 60 * 60 * 1000,
+      //   secure:false
+      // });
+      // res.cookie("token", token, {
+      //   httpOnly: true,
+      //   maxAge: 86400000,
+      // });
       res.status(200).json({ msg: "user Login successfully" });
     } catch (error) {
       console.log(error);
@@ -118,5 +146,4 @@ module.exports = {
       return res.status(500).json({ error: "Login secret is not generated" });
     }
   },
-  
 };
