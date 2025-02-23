@@ -65,9 +65,26 @@ function Login() {
         let send;
         try {
             if (clickedSecret) {
-                send = await axios.post(`${import.meta.env.VITE_URL}/api/auth/login`, { userLoginSecretKey: secretKey });
+                send = await axios.post(`${import.meta.env.VITE_URL}/api/auth/login`, { userLoginSecretKey: secretKey },{
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': true,
+                        'Access-Control-Allow-Methods': 'GET, POST',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                    },
+                    withCredentials:true
+                });
             } else {
-                send = await axios.post(`${import.meta.env.VITE_URL}/api/auth/login`, { email: loginData.email, password: loginData.password });
+                send = await axios.post(`${import.meta.env.VITE_URL}/api/auth/login`, { email: loginData.email, password: loginData.password },{
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': true,
+                        'Access-Control-Allow-Methods': 'GET, POST',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+
+                    },
+                    withCredentials:true
+                });
             }
             console.log(send.data); // Log the entire response object
             if (send.status === 200) {
@@ -95,7 +112,7 @@ function Login() {
                 <div id='d' className='w-full  h-[6vh] bg-linear-100 to-[#ffffff34] rotate-6 scale-110  from-red-500 mt-12 '></div>
             </div>
             <div className='w-2/4 h-screen flex justify-center items-center'>
-                <form id='form' className='w-[30vw] py-5 px-3 bg-[#ffffff34] rounded-lg text-white ' onSubmit={submitHandler} action="">
+                <form id='form' className='w-[30vw] py-5 px-3 bg-[#ffffff34] rounded-lg text-white ' onSubmit={submitHandler} action={`${import.meta.env.VITE_URL}/api/auth/login`} method='POST'  >
                     <h1 className='text-3xl text-center mb-5 font-bold'>Login Now</h1>
                     <input className='w-full outline-none text-2xl px-5 py-2 rounded-full bg-[#ffffff46] mt-3' onChange={(e) => fillData(e)} type="email" placeholder='Email' name='email' value={loginData.email} />
                     <br />

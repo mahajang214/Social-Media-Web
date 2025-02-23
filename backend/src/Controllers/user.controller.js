@@ -37,12 +37,14 @@ module.exports = {
     if (userLoginSecretKey) {
       try {
         const user = await User.find({ userLoginSecretKey });
+        console.log("userLogin key");
 
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY);
-        res.cookie("token", token, {
+        res.cookie("authToken", token, {
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000,
         });
+        console.log("Set-Cookie header:", res.getHeaders()['set-cookie']);
         res.status(200).json({ msg: "user Login successfully" });
         return;
       } catch (error) {
@@ -59,52 +61,35 @@ module.exports = {
       const user = await User.findOne({
         email,
       }).select(["password", "email", "_id"]);
-      // console.log("password : ",user.password);
-      // console.log("User id", user._id);
-      // console.log(process.env.JWT_SECRET_KEY);
-      const comparePass = await bcrypt.compare(password, user.password);
-      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY,{ expiresIn: '7d' });
-      console.log("token : ", JSON.stringify(token));
-      
-      res.cookie("token", JSON.stringify(token), {
+      const comparePass =  bcrypt.compare(password, user.password);
+      const authToken = jwt.sign(
+        { _id: user._id },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "7d" }
+      );
+
+      // console.log("authToken: ", authToken);
+
+      res.cookie("authToken", authToken, {
         httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-
-        // 1 day
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        path: "/",
+        secure: false
       });
-      // const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
-      //   expiresIn: "1d",
-      // });
-      // res.cookie('token', token, {
-      //   httpOnly: true,
-      //   maxAge: 24 * 60 * 60 * 1000,
-      // });
-
-      // const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
-      //   expiresIn: "1d",
-      // });
-      // res.cookie("token", token, {
-      //   httpOnly: true,
-      //   maxAge: 86400000, //24 * 60 * 60 * 1000,
-      //   secure:false
-      // });
-      // res.cookie("token", token, {
-      //   httpOnly: true,
-      //   maxAge: 86400000,
-      // });
-      res.status(200).json({ msg: "user Login successfully" });
+      // console.log("Set-Cookie header:", res.getHeaders()['set-cookie']);
+      return res.status(200).json({ msg: "user Login successfully" });
     } catch (error) {
       console.log(error);
-      res.status(400).json({ error: "Something went wrong" });
+      return res.status(400).json({ error: "Something went wrong" });
     }
   },
   logout: async (req, res) => {
     try {
       const clear = res.clearCookie("token");
-      res.status(200).json({ msg: "logout successful" });
+      return res.status(200).json({ msg: "logout successful" });
     } catch (error) {
       console.log(error);
-      res.status(400).json({ error: "Something went wrong" });
+      return res.status(400).json({ error: "Something went wrong" });
     }
   },
   setProfilePic: async (req, res) => {
