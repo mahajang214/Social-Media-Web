@@ -5,12 +5,14 @@ import Loading from '../Components/Loading';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {motion}from 'motion/react';
+import authStore from '../Store/authStore';
 function Login() {
     const [loginData, setLoginData] = useState({ email: '', password: "" });
     const [loading, setLoading] = useState(false);
     const [clickedSecret, setClickedSecret] = useState(false);
     const [secretKey, setSecretKey] = useState('');
     const navigate=useNavigate();
+    const {setAuth}=authStore();
 
     useGSAP(() => {
         gsap.from('#d', {
@@ -87,16 +89,17 @@ function Login() {
                 });
             }
             console.log(send.data); // Log the entire response object
+            setLoading(false);
+
             if (send.status === 200) {
+                setAuth(true);
                 navigate('/');
             } else {
                 console.error("Login failed:", send.data);
             }
         } catch (error) {
             console.error("Error during login:", error);
-        } finally {
-            setLoading(false);
-        }
+        } 
     }
 
     return (
