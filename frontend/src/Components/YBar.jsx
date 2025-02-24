@@ -23,7 +23,7 @@ function YBar() {
             xmlnsXlink="http://www.w3.org/1999/xlink"
           >
             {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --> */}
-            <title>home</title>
+            <title>Home</title>
             <desc>Created with Sketch.</desc>
             <g
               id="Icons"
@@ -52,6 +52,32 @@ function YBar() {
             </g>
           </svg>
         </motion.li>
+
+        <motion.li
+          initial={boxVariants.i}
+          animate={boxVariants.s}
+          className="px-3 py-2 border-white border-[1px] rounded-xl "
+        >
+            {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->  //create Post  */}
+            <svg className="w-[30px] h-[30px]" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --> */}
+    <title>add post</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+        <g id="Rounded" transform="translate(-411.000000, -1487.000000)">
+            <g id="Content" transform="translate(100.000000, 1428.000000)">
+                <g id="-Round-/-Content-/-add" transform="translate(306.000000, 54.000000)">
+                    <g transform="translate(0.000000, 0.000000)">
+                        <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                        <path d="M18,13 L13,13 L13,18 C13,18.55 12.55,19 12,19 C11.45,19 11,18.55 11,18 L11,13 L6,13 C5.45,13 5,12.55 5,12 C5,11.45 5.45,11 6,11 L11,11 L11,6 C11,5.45 11.45,5 12,5 C12.55,5 13,5.45 13,6 L13,11 L18,11 C18.55,11 19,11.45 19,12 C19,12.55 18.55,13 18,13 Z" id="🔹Icon-Color" fill="#fff"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
+        </motion.li>
+
         <motion.li
           initial={boxVariants.i}
           animate={boxVariants.s}
@@ -59,7 +85,7 @@ function YBar() {
         >
           <svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" xmlnssketch="http://www.bohemiancoding.com/sketch/ns">
     {/* <!-- Generator: Sketch 3.0.3 (7891) - http://www.bohemiancoding.com/sketch --> */}
-    <title>icon 111 search</title>
+    <title>search</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
     <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd" sketchtype="MSPage">

@@ -1,9 +1,19 @@
 import React from "react";
 import YBar from "./YBar";
+import { motion } from "motion/react";
 
 function AllPost() {
   return (
-    <div className="w-full h-screen overflow-scroll  flex flex-col justify-between items-end "> 
+    <motion.div
+    initial={{
+      opacity:0
+    }}
+    animate={{
+      opacity:1
+      }}
+      transition={{
+        duration: 0.5
+      }} className="w-full h-screen overflow-scroll  flex flex-col justify-between items-end "> 
     {/* //yeha se lef or right hongs items-start items-end */}
      
         <div className="w-[40vw] h-[60vh] mt-3  bg-[#ffffff35] rounded-md px-2  ">
@@ -87,7 +97,7 @@ function AllPost() {
         
       
       <YBar />
-    </div>
+    </motion.div>
   );
 }
 

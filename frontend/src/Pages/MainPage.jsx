@@ -10,6 +10,7 @@ function MainPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [userdata, setUserData] = useState(null);
+  // const [isOn, setIsOn] = useState(false);
   const {
     setUser,
     setFrom,
@@ -18,9 +19,14 @@ function MainPage() {
     setFollower,
     setFollowing,
     setPosts,
-    from,to,
+    from,
+    to,
     setToName,
-    setFromName,load
+    setFromName,
+    load,
+    chat,
+    setChat,
+    onlineUsers,
   } = userStore();
 
   useEffect(() => {
@@ -62,7 +68,7 @@ function MainPage() {
     fetchUser();
   }, []);
   // useEffect(() => {
-    
+
   // }, []);
 
   const cursorAnimation = (e) => {
@@ -81,12 +87,31 @@ function MainPage() {
       <div
         id="dot"
         className="w-[20px] h-[20px] rounded-full absolute top-0 bg-[#ffffffb1]"
-      >{load?load:null}</div>
+      >
+        {load ? load : null}
+      </div>
       <div className="w-1/4 h-full bg-[#00acb5d9] py-2 rounded-r-md px-2 overflow-y-scroll ">
         <h1 className="text-3xl font-bold text-center mt-1 ">All Users</h1>
         {data ? (
           data.map((el, k) => {
+            // for (let i = 0; i < onlineUsers.length; i++) {
+              // let element = onlineUsers[i];
+              // console.log("",i,"online array : ",element);
+              // console.log(Boolean(element===el.name));
+              
+              // if(onlineUsers[i]===el.name){
+              //   setIsOn(true);
+              //   // console.log("ye chal gaya");
+                
+              // }
+            // }
+            // console.log("onlineusers.id===el.name :",Boolean(onlineUsers.id==el.name));
+              // console.log("online users ID :",onlineUsers);
+              // console.log("el name :",el.name);
 
+
+            
+           
             return (
               <motion.div
                 key={k}
@@ -105,14 +130,18 @@ function MainPage() {
                 transition={{
                   duration: 0.5,
                 }}
-                 onClick={()=>{setTo(el._id)
+                onClick={() => {
+                  setTo(el._id);
                   setToName(el.name);
-            // console.log("to id: ",el._id);
+                  setChat(true);
 
-                 }}
-                className="w-full py-2 px-3 hover:bg-black hover:text-white hover:scale-105 transition-all bg-[#ffffff4a] text-2xl mt-3 rounded-md"
+                  // console.log("to id: ",el._id);
+                }}
+                className="w-full py-2 px-3 flex justify-between  hover:bg-black hover:text-white hover:scale-105 transition-all bg-[#ffffff4a] text-2xl mt-3 rounded-md"
               >
                 <h1>{el.name}</h1>
+              {/* {isOn&&<h3>online</h3>} */}
+              {/* <h3>online</h3> */}
               </motion.div>
             );
           })
@@ -120,10 +149,7 @@ function MainPage() {
           <Loading />
         )}
       </div>
-      <div className="w-3/4 h-full">
-       
- {    (to&&from)?<Chat />: <AllPost/>}
-      </div>
+      <div className="w-3/4 h-full">{chat ? <Chat /> : <AllPost />}</div>
     </div>
   );
 }
