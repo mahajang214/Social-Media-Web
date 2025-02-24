@@ -19,13 +19,15 @@ module.exports = {
     const { text, image } = req.body;
     const userId = req.user._id;
     const reciever = req.params.id;
+    // console.log("reciever id : ",req.params.id);
+    
     try {
-      const findReciever = await User.findOne({ _id: reciever });
+      const findReciever = await User.find({ _id: reciever });
       if (!findReciever) {
         return res.status(404).json({ error: "user not found" });
       }
       const newMessage = await Message.create({
-        from: userId,
+        from: userId, 
         to: reciever,
         text,
         image: image ? image : null,

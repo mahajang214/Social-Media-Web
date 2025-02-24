@@ -110,7 +110,7 @@ function MainPage() {
             // console.log("to id: ",el._id);
 
                  }}
-                className="w-full py-2 px-3 bg-[#ffffff4a] text-2xl mt-3 rounded-md"
+                className="w-full py-2 px-3 hover:bg-black hover:text-white hover:scale-105 transition-all bg-[#ffffff4a] text-2xl mt-3 rounded-md"
               >
                 <h1>{el.name}</h1>
               </motion.div>
