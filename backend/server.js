@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
+const path = require("path");
 const cookieParser=require('cookie-parser')
 const cors = require("cors");
 const authRoutes = require("../backend/src/Routes/authRoutes");
@@ -32,6 +33,9 @@ web.use(
     credentials: true,
   })
 );
+
+// Add this line before your routes
+web.use('/uploads', express.static(path.join(__dirname, 'src/Upload_Data')));
 
 web.use("/api/auth", authRoutes);
 web.use("/api/main", mainRoute);

@@ -35,6 +35,8 @@ const userStore = create((set,get) => ({
     setLoad: (e) => set({ load: e }),
     chat:true,
     setChat:(e)=>set({chat:e}),
+    addPost:false,
+    setAddPost:(e)=>set({addPost:e}),
 //     onlineUsers: [],  // Initial empty array
 //   setOnlineUsers: (newUser) => set((state) => {
 //     // Add new user or update existing user in the array

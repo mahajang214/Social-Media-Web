@@ -1,13 +1,15 @@
 import { motion } from "motion/react";
 import React from "react";
+import userStore from "../Store/userStore";
 // import Home from "../assets/Home-256.webp";
 function YBar() {
+  const {setAddPost,addPost}=userStore();
   const boxVariants = {
     i: { x: 0, y: 50, scale: 1 },
     s: { x: 0, y: 0, scale: 1, transition: { duration: 0.7 } },
   };
   return (
-    <nav className="w-full py-1 rounded-t-lg text-2xl bg-[#ffffff21] ">
+    <nav className="w-full absolute bottom-0 py-1 rounded-t-lg text-2xl bg-[#ffffff21] ">
       <ul className="flex justify-around items-center w-full h-full">
         <motion.li
           initial={boxVariants.i}
@@ -57,6 +59,7 @@ function YBar() {
           initial={boxVariants.i}
           animate={boxVariants.s}
           className="px-3 py-2 border-white border-[1px] rounded-xl "
+          onClick={()=>setAddPost(!addPost)}
         >
             {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->  //create Post  */}
             <svg className="w-[30px] h-[30px]" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
