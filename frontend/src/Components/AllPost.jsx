@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import userStore from "../Store/userStore";
 import axios from "axios";
@@ -6,10 +6,13 @@ import Loading from "./Loading";
 import { useNavigate } from "react-router-dom";
 
 function AllPost() {
-  const { addPost, fromName, setAddPost } = userStore();
+  const { addPost, fromName, setAddPost,userProfilePicture } = userStore();
   const [file, setFile] = useState(null);
   const [allposts, setAllposts] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [postData, setPostData] = useState({title:"",subtitle:"",captions:''});
+  const [tempPic, setTempPic] = useState(null);
+  const viewBox=useRef(null);
   const navigate = useNavigate();
   const boxVariants = {
     i: { x: 0, y: 50, scale: 1 },
@@ -41,17 +44,23 @@ function AllPost() {
     fetchAllPosts();
   }, []);
 
+  // useEffect(()=>{
+  //   viewBox.current?.scrollIntoView({ behavior: "smooth" });
+  // },[allposts]);
+
   const sendFile = async () => {
     if (!file) {
       return alert("Please select an image");
     }
-    try {
+    try { 
+      setLoading(true);
       const formData = new FormData();
       formData.append("image", file); // Changed from 'file' to 'image' to match backend
-      formData.append("title", "demoTitle");
-      formData.append("subTitle", "demoSubTitle");
+      formData.append("title", postData.title);
+      formData.append("subTitle", postData.subtitle);
       formData.append("senderName", fromName);
-      formData.append("caption", "Demo captions");
+      formData.append("caption", postData.captions);
+      formData.append('upic',userProfilePicture);
 
       const res = await axios.post(
         `${import.meta.env.VITE_URL}/api/main/send`,
@@ -63,11 +72,18 @@ function AllPost() {
           withCredentials: true,
         }
       );
-      console.log("file path", res.data);
+      setLoading(false);
+      setAddPost(false);
+      setTempPic("");
+      setPostData({title:"",subtitle:"",captions:""});
+      console.log("successfull", res.data);
     } catch (error) {
       console.log(error.message);
     }
   };
+  const captureChange=(e)=>{
+    setPostData({...postData, [e.target.name]: e.target.value});
+  }
 
   return (
     <motion.div
@@ -80,7 +96,7 @@ function AllPost() {
       transition={{
         duration: 0.5,
       }}
-      className="w-full h-screen relative overflow-y-scroll  flex flex-col justify-between items-end "
+      className="w-full h-screen relative overflow-y-scroll  flex flex-col justify-between items-center "
     >
       {/* //yeha se lef or right hongs items-start items-end */}
       {loading && <Loading />}
@@ -88,12 +104,28 @@ function AllPost() {
         allposts.map((el, k) => (
           <div
             key={k}
-            className="w-[40vw] py-6 mt-10 bg-[#ffffff35] rounded-md px-2"
+            className="w-[40vw] py-6 mt-10 bg-[#ffffff35]  rounded-md px-2"
           >
             {console.log(el)}
             <div className="flex w-full gap-5 items-center border-b-[1px] pb-2">
               <div className="flex gap-4 items-center">
-                <div className="w-[2.5vw] h-[5vh] bg-amber-400 rounded-full"></div>
+                <div className="w-[2.5vw] h-[5vh] bg-cover overflow-hidden bg-amber-400 rounded-full">
+
+
+                {el.userPic ? (
+                <img
+                  src={`${
+                    import.meta.env.VITE_URL
+                  }/uploads/UsersProfilePic/${el.userPic
+                    .split("/")
+                    .pop()}`}
+                  alt="profile pic"
+                  className="w-full h-full bg-cover"
+                />
+              ) : null}
+
+
+                </div>
               </div>
               <div className="flex justify-between items-left flex-col">
                 <h1 className="font-bold text-2xl">{el.title}</h1>
@@ -182,6 +214,7 @@ function AllPost() {
             </div>
           </div>
         ))}
+        {/* <div ref={viewBox}></div> */}
 
       {addPost && (
         <motion.div
@@ -198,16 +231,23 @@ function AllPost() {
           transition={{
             duration: 0.5,
           }}
-          className="w-[40vw] cursor-default backdrop-blur-xl absolute top-[17%] right-[22%] h-[60vh] mt-3  bg-[#ffffff35] rounded-md px-2  "
+          className="w-[40vw] cursor-default backdrop-blur-xl fixed top-[17%] right-[22%] h-[60vh] mt-3  bg-[#ffffff35] rounded-md px-2  "
         >
           <div className="flex  gap-5 items-center border-b-[1px] pb-2 ">
             <div className="flex gap-4  items-center">
               {/* <h1>User name</h1> */}
-              <div className="w-[2.5vw] h-[5vh] bg-amber-400 rounded-full"></div>
+              <div className="w-[2.5vw] h-[5vh] bg-amber-400 overflow-hidden bg-cover rounded-full">
+                <img src={`${
+                    import.meta.env.VITE_URL
+                  }/uploads/UsersProfilePic/${userProfilePicture
+                    .split("/")
+                    .pop()}`} alt="" className="w-full h-full bg-cover" />
+              </div>
             </div>
             <div className="flex justify-between items-left flex-col">
-              <h1 className="font-bold text-2xl">Enter Title</h1>
-              <h3>enter sub-title</h3>
+              {/* <h1 className="font-bold text-2xl">Enter Title</h1> */}
+              <input onChange={captureChange} className="w-full font-bold text-2xl outline-none" name="title" value={`${postData.title}`} type="text" placeholder="Enter Title" />
+              <input onChange={captureChange} className="w-full  outline-none" name="subtitle" value={`${postData.subtitle}`} type="text" placeholder="Enter Title" />
             </div>
           </div>
           <div
@@ -221,8 +261,9 @@ function AllPost() {
               document.querySelector("#selectFile").click();
             }}
             onDoubleClick={() => console.log("Liked")}
-            className="w-full h-[70%] border-2 border-purple-500 flex flex-col items-center justify-center "
+            className="w-full h-[70%] border-2 relative border-purple-500 flex flex-col items-center justify-center "
           >
+            {tempPic? <img src={tempPic} alt="image" className="w-full h-full object-cover" />:<div className="w-full h-full flex flex-col justify-center items-center">
             <form encType="multipart/" method="post">
               <input
                 className="hidden"
@@ -232,6 +273,7 @@ function AllPost() {
                 onChange={(e) => {
                   const file = e.target.files[0];
                   setFile(file);
+                  setTempPic(URL.createObjectURL(file));
                   // console.log("file : ",file);
                 }}
               />
@@ -282,9 +324,14 @@ function AllPost() {
                 </g>
               </g>
             </svg>
+              </div>}
+            {tempPic && <button onClick={()=>setTempPic("")} className="px-3 py-1 absolute bg-red-500 cursor-pointer rounded-md top-5 right-5">delete</button>}
+
+            
           </div>
           <div className="w-full h-[17%] flex flex-col justify-between">
-            <div>captions : What's on your mind? Share your thoughts!</div>
+            {/* <div>captions : What's on your mind? Share your thoughts!</div> */}
+            <textarea onChange={captureChange} className="w-full  text-xl outline-none" name="captions" value={`${postData.captions}`} type="text" placeholder="Enter captions" />
             <button
               onClick={() => sendFile()}
               className="w-full py-1 cursor-pointer text-white rounded-xl  bg-[#00acb5d9] text-2xl"

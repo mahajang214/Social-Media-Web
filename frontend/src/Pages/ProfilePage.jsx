@@ -111,6 +111,8 @@ function ProfilePage() {
                   className="w-full h-full bg-cover"
                 />
               ) : null}
+
+
               {data.profilePic ? (
                 <img
                   src={`${
@@ -122,6 +124,8 @@ function ProfilePage() {
                   className="w-full h-full bg-cover"
                 />
               ) : null}
+
+              
             </div>
 
             <input

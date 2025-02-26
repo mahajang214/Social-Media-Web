@@ -46,6 +46,9 @@ module.exports = {
     try {
       const imageUrl = req.file ? `/Upload_Data/${req.file.filename}` : null;
       
+      // const userprofilepic = await User.findById({_id:userId}).profilePic;
+      
+
       const post = await Post.create({
         title: req.body.title,
         subTitle: req.body.subTitle,
@@ -53,6 +56,7 @@ module.exports = {
         image: imageUrl,
         captions: req.body.caption,
         user: userId,
+        userPic:req.body.upic
       });
 
       if (!post) {

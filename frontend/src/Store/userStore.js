@@ -37,6 +37,8 @@ const userStore = create((set,get) => ({
     setChat:(e)=>set({chat:e}),
     addPost:false,
     setAddPost:(e)=>set({addPost:e}),
+    userProfilePicture:"",
+    setUserProfilePicture:(e)=>set({userProfilePicture:e}),
 //     onlineUsers: [],  // Initial empty array
 //   setOnlineUsers: (newUser) => set((state) => {
 //     // Add new user or update existing user in the array

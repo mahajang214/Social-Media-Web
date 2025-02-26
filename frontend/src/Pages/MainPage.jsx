@@ -26,7 +26,7 @@ function MainPage() {
     load,
     chat,
     setChat,
-    onlineUsers,
+    setUserProfilePicture,
   } = userStore();
 
   useEffect(() => {
@@ -60,6 +60,7 @@ function MainPage() {
         setFollowing(userdata.data.user.following);
         setPosts(userdata.data.user.posts);
         setFromName(userdata.data.user.name);
+        setUserProfilePicture(userdata.data.user.profilePic);
         // console.log('from:',  from,"to:",to,"name:",user,"post:",posts,"follower:",follower,"following:",following);
       } catch (error) {
         console.log("error in fetching user data", error);
