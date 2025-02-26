@@ -6,6 +6,7 @@ module.exports.protectedRoute = async (req, res, next) => {
     // console.log("req Cookie received:", req.cookies);  // This logs the cookies sent with the request
      // This logs the cookies sent with the request
     const token = req.cookies.authToken;
+    console.log("token : ",req.cookies);
   
     if (!token) {
       return res.status(404).json({ error: "Token not found" });

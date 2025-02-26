@@ -4,15 +4,21 @@ import userStore from "../Store/userStore";
 import axios from "axios";
 import Loading from "./Loading";
 import { useNavigate } from "react-router-dom";
+import postStore from "../Store/postStore";
 
 function AllPost() {
-  const { addPost, fromName, setAddPost,userProfilePicture } = userStore();
+  const { addPost, fromName, setAddPost, userProfilePicture } = userStore();
+  const {setPostId,postId}=postStore();
   const [file, setFile] = useState(null);
   const [allposts, setAllposts] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [postData, setPostData] = useState({title:"",subtitle:"",captions:''});
+  const [postData, setPostData] = useState({
+    title: "",
+    subtitle: "",
+    captions: "",
+  });
   const [tempPic, setTempPic] = useState(null);
-  const viewBox=useRef(null);
+  const viewBox = useRef(null);
   const navigate = useNavigate();
   const boxVariants = {
     i: { x: 0, y: 50, scale: 1 },
@@ -52,7 +58,7 @@ function AllPost() {
     if (!file) {
       return alert("Please select an image");
     }
-    try { 
+    try {
       setLoading(true);
       const formData = new FormData();
       formData.append("image", file); // Changed from 'file' to 'image' to match backend
@@ -60,7 +66,7 @@ function AllPost() {
       formData.append("subTitle", postData.subtitle);
       formData.append("senderName", fromName);
       formData.append("caption", postData.captions);
-      formData.append('upic',userProfilePicture);
+      formData.append("upic", userProfilePicture);
 
       const res = await axios.post(
         `${import.meta.env.VITE_URL}/api/main/send`,
@@ -75,14 +81,38 @@ function AllPost() {
       setLoading(false);
       setAddPost(false);
       setTempPic("");
-      setPostData({title:"",subtitle:"",captions:""});
+      setPostData({ title: "", subtitle: "", captions: "" });
       console.log("successfull", res.data);
     } catch (error) {
       console.log(error.message);
     }
   };
-  const captureChange=(e)=>{
-    setPostData({...postData, [e.target.name]: e.target.value});
+  const captureChange = (e) => {
+    setPostData({ ...postData, [e.target.name]: e.target.value });
+  };
+
+  const like=async(id)=>{
+    // console.log(id)
+    try {
+      const res=await axios.post(`${import.meta.env.VITE_URL}/api/main/like/${id}`,{likedBy:fromName},  { 
+        headers:{
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': true,
+          'Access-Control-Allow-Methods': 'GET, POST',
+          'Access-Control-Allow-Headers': 'Content-Type',
+      },
+      withCredentials:true
+       });
+      alert(`${res.data.error}`);
+      console.log(res.data);
+
+
+    } catch (error) {
+      alert(`${error.messages}`);
+      console.log(error.message)
+      
+      
+    }
   }
 
   return (
@@ -110,21 +140,15 @@ function AllPost() {
             <div className="flex w-full gap-5 items-center border-b-[1px] pb-2">
               <div className="flex gap-4 items-center">
                 <div className="w-[2.5vw] h-[5vh] bg-cover overflow-hidden bg-amber-400 rounded-full">
-
-
-                {el.userPic ? (
-                <img
-                  src={`${
-                    import.meta.env.VITE_URL
-                  }/uploads/UsersProfilePic/${el.userPic
-                    .split("/")
-                    .pop()}`}
-                  alt="profile pic"
-                  className="w-full h-full bg-cover"
-                />
-              ) : null}
-
-
+                  {el.userPic ? (
+                    <img
+                      src={`${
+                        import.meta.env.VITE_URL
+                      }/uploads/UsersProfilePic/${el.userPic.split("/").pop()}`}
+                      alt="profile pic"
+                      className="w-full h-full bg-cover"
+                    />
+                  ) : null}
                 </div>
               </div>
               <div className="flex justify-between items-left flex-col">
@@ -153,7 +177,12 @@ function AllPost() {
             <div className="w-full h-[20%] flex flex-col justify-between">
               <div className="flex-1">{el.captions}</div>
               <div className="flex gap-5 items-center">
-                <button className="ml-3 hover:translate-y-[-10px] hover:scale-125 transition-all cursor-pointer">
+                <button onClick={(e)=>{
+                  // setPostId(el._id);
+                  like(el._id);
+                  // console.log("el id :",el._id);
+                  
+                }} className="ml-3 hover:translate-y-[-10px] hover:scale-125 transition-all cursor-pointer">
                   {true ? (
                     <svg
                       className="w-[30px] h-[30px]"
@@ -185,7 +214,7 @@ function AllPost() {
                   )}
                   <span className="text-gray-200">{el.like.length} </span>
                 </button>
-                <button className="ml-5 cursor-pointer hover:translate-y-[-10px] hover:scale-125 transition-all">
+                <button onClick={()=>setPostId(el._id)} className="ml-5 cursor-pointer hover:translate-y-[-10px] hover:scale-125 transition-all">
                   <svg
                     version="1.1"
                     className="w-[25px] h-[25px]"
@@ -214,7 +243,7 @@ function AllPost() {
             </div>
           </div>
         ))}
-        {/* <div ref={viewBox}></div> */}
+      {/* <div ref={viewBox}></div> */}
 
       {addPost && (
         <motion.div
@@ -237,17 +266,35 @@ function AllPost() {
             <div className="flex gap-4  items-center">
               {/* <h1>User name</h1> */}
               <div className="w-[2.5vw] h-[5vh] bg-amber-400 overflow-hidden bg-cover rounded-full">
-                <img src={`${
+                <img
+                  src={`${
                     import.meta.env.VITE_URL
                   }/uploads/UsersProfilePic/${userProfilePicture
                     .split("/")
-                    .pop()}`} alt="" className="w-full h-full bg-cover" />
+                    .pop()}`}
+                  alt=""
+                  className="w-full h-full bg-cover"
+                />
               </div>
             </div>
             <div className="flex justify-between items-left flex-col">
               {/* <h1 className="font-bold text-2xl">Enter Title</h1> */}
-              <input onChange={captureChange} className="w-full font-bold text-2xl outline-none" name="title" value={`${postData.title}`} type="text" placeholder="Enter Title" />
-              <input onChange={captureChange} className="w-full  outline-none" name="subtitle" value={`${postData.subtitle}`} type="text" placeholder="Enter Title" />
+              <input
+                onChange={captureChange}
+                className="w-full font-bold text-2xl outline-none"
+                name="title"
+                value={`${postData.title}`}
+                type="text"
+                placeholder="Enter Title"
+              />
+              <input
+                onChange={captureChange}
+                className="w-full  outline-none"
+                name="subtitle"
+                value={`${postData.subtitle}`}
+                type="text"
+                placeholder="Enter Title"
+              />
             </div>
           </div>
           <div
@@ -263,75 +310,95 @@ function AllPost() {
             onDoubleClick={() => console.log("Liked")}
             className="w-full h-[70%] border-2 relative border-purple-500 flex flex-col items-center justify-center "
           >
-            {tempPic? <img src={tempPic} alt="image" className="w-full h-full object-cover" />:<div className="w-full h-full flex flex-col justify-center items-center">
-            <form encType="multipart/" method="post">
-              <input
-                className="hidden"
-                type="file"
-                name="image"
-                id="selectFile"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  setFile(file);
-                  setTempPic(URL.createObjectURL(file));
-                  // console.log("file : ",file);
-                }}
+            {tempPic ? (
+              <img
+                src={tempPic}
+                alt="image"
+                className="w-full h-full object-cover"
               />
-            </form>
-            <h1 className="font-bold mb-3">Select image</h1>
-            <svg
-              className="w-[30%] h-[30%]"
-              viewBox="0 0 14 14"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-            >
-              {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --> */}
-              <title>add post</title>
-              <desc>Created with Sketch.</desc>
-              <g
-                id="Icons"
-                stroke="none"
-                strokeWidth="1"
-                fill="none"
-                fillRule="evenodd"
-              >
-                <g
-                  id="Rounded"
-                  transform="translate(-411.000000, -1487.000000)"
+            ) : (
+              <div className="w-full h-full flex flex-col justify-center items-center">
+                <form encType="multipart/" method="post">
+                  <input
+                    className="hidden"
+                    type="file"
+                    name="image"
+                    id="selectFile"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      setFile(file);
+                      setTempPic(URL.createObjectURL(file));
+                      // console.log("file : ",file);
+                    }}
+                  />
+                </form>
+                <h1 className="font-bold mb-3">Select image</h1>
+                <svg
+                  className="w-[30%] h-[30%]"
+                  viewBox="0 0 14 14"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
                 >
+                  {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --> */}
+                  <title>add post</title>
+                  <desc>Created with Sketch.</desc>
                   <g
-                    id="Content"
-                    transform="translate(100.000000, 1428.000000)"
+                    id="Icons"
+                    stroke="none"
+                    strokeWidth="1"
+                    fill="none"
+                    fillRule="evenodd"
                   >
                     <g
-                      id="-Round-/-Content-/-add"
-                      transform="translate(306.000000, 54.000000)"
+                      id="Rounded"
+                      transform="translate(-411.000000, -1487.000000)"
                     >
-                      <g transform="translate(0.000000, 0.000000)">
-                        <polygon
-                          id="Path"
-                          points="0 0 24 0 24 24 0 24"
-                        ></polygon>
-                        <path
-                          d="M18,13 L13,13 L13,18 C13,18.55 12.55,19 12,19 C11.45,19 11,18.55 11,18 L11,13 L6,13 C5.45,13 5,12.55 5,12 C5,11.45 5.45,11 6,11 L11,11 L11,6 C11,5.45 11.45,5 12,5 C12.55,5 13,5.45 13,6 L13,11 L18,11 C18.55,11 19,11.45 19,12 C19,12.55 18.55,13 18,13 Z"
-                          id="🔹Icon-Color"
-                          fill="#fff"
-                        ></path>
+                      <g
+                        id="Content"
+                        transform="translate(100.000000, 1428.000000)"
+                      >
+                        <g
+                          id="-Round-/-Content-/-add"
+                          transform="translate(306.000000, 54.000000)"
+                        >
+                          <g transform="translate(0.000000, 0.000000)">
+                            <polygon
+                              id="Path"
+                              points="0 0 24 0 24 24 0 24"
+                            ></polygon>
+                            <path
+                              d="M18,13 L13,13 L13,18 C13,18.55 12.55,19 12,19 C11.45,19 11,18.55 11,18 L11,13 L6,13 C5.45,13 5,12.55 5,12 C5,11.45 5.45,11 6,11 L11,11 L11,6 C11,5.45 11.45,5 12,5 C12.55,5 13,5.45 13,6 L13,11 L18,11 C18.55,11 19,11.45 19,12 C19,12.55 18.55,13 18,13 Z"
+                              id="🔹Icon-Color"
+                              fill="#fff"
+                            ></path>
+                          </g>
+                        </g>
                       </g>
                     </g>
                   </g>
-                </g>
-              </g>
-            </svg>
-              </div>}
-            {tempPic && <button onClick={()=>setTempPic("")} className="px-3 py-1 absolute bg-red-500 cursor-pointer rounded-md top-5 right-5">delete</button>}
-
-            
+                </svg>
+              </div>
+            )}
+            {tempPic && (
+              <button
+                onClick={() => setTempPic("")}
+                className="px-3 py-1 absolute bg-red-500 cursor-pointer rounded-md top-5 right-5"
+              >
+                delete
+              </button>
+            )}
           </div>
           <div className="w-full h-[17%] flex flex-col justify-between">
             {/* <div>captions : What's on your mind? Share your thoughts!</div> */}
-            <textarea onChange={captureChange} className="w-full  text-xl outline-none" name="captions" value={`${postData.captions}`} type="text" placeholder="Enter captions" />
+            <textarea
+              onChange={captureChange}
+              className="w-full  text-xl outline-none"
+              name="captions"
+              value={`${postData.captions}`}
+              type="text"
+              placeholder="Enter captions"
+            />
             <button
               onClick={() => sendFile()}
               className="w-full py-1 cursor-pointer text-white rounded-xl  bg-[#00acb5d9] text-2xl"

@@ -1,8 +1,8 @@
 const Post = require("../Modals/post.modal");
 const User = require("../Modals/user.modal");
-const multer=require('multer');
-const path =require('path');
-const crypto=require('crypto');
+const multer = require('multer');
+const path = require('path');
+const crypto = require('crypto');
 module.exports = {
   sendUserInfo: async (req, res) => {
     const userId = req.decode._id;
@@ -45,9 +45,9 @@ module.exports = {
     const userId = req.user._id;
     try {
       const imageUrl = req.file ? `/Upload_Data/${req.file.filename}` : null;
-      
+
       // const userprofilepic = await User.findById({_id:userId}).profilePic;
-      
+
 
       const post = await Post.create({
         title: req.body.title,
@@ -56,7 +56,7 @@ module.exports = {
         image: imageUrl,
         captions: req.body.caption,
         user: userId,
-        userPic:req.body.upic
+        userPic: req.body.upic
       });
 
       if (!post) {
@@ -88,16 +88,31 @@ module.exports = {
     }
   },
   likePost: async (req, res) => {
-    const userId = req.user._id;
-    const { likedPostId } = req.params.id;
+    // const userId = req.user._id;
+    const likedPostId = req.params.id;
+    const { likedBy: jisneLikeKiHE } = req.body;
+    // console.log("params id : ",req.params.id)
     try {
+
+      const findPostIsLikedByUser=await Post.findById({_id:likedPostId});
+      const likeArr=findPostIsLikedByUser.like;
+      likeArr.forEach((el)=>{
+        if(el.toString()===jisneLikeKiHE){
+          return res.status(409).json({ error: "you already liked this post" });
+          }
+      })
+      // console.log("like : ",findPostIsLikedByUser.like)
+      // if (findPostIsLikedByUser.id===jisneLikeKiHE) {
+      //   return res.status(400).json({ error: "you already liked this post" });
+      // }
       const findLikePost = await Post.findByIdAndUpdate({ _id: likedPostId }, {
-        $push: { like: userId }
-      });
+        $push: { like: jisneLikeKiHE }
+      }, { new: true });
       if (!findLikePost) {
         res.status(500).json({ error: "like is not worked " });
       }
-      res.status(200).json({ msg: "liked post successfully" });
+
+      res.status(200).json({ msg: "liked post " });
 
 
 
@@ -137,7 +152,7 @@ module.exports = {
       if (!commentPost) {
         res.status(500).json({ error: "comment " });
       }
-      return res.status(200).json({ msg: " comment is successfull",commentPost });
+      return res.status(200).json({ msg: " comment is successfull", commentPost });
 
 
 
