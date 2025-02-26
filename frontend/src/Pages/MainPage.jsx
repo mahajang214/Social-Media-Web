@@ -95,22 +95,7 @@ function MainPage() {
         <h1 className="text-3xl font-bold text-center mt-1 ">All Users</h1>
         {data ? (
           data.map((el, k) => {
-            // for (let i = 0; i < onlineUsers.length; i++) {
-              // let element = onlineUsers[i];
-              // console.log("",i,"online array : ",element);
-              // console.log(Boolean(element===el.name));
-              
-              // if(onlineUsers[i]===el.name){
-              //   setIsOn(true);
-              //   // console.log("ye chal gaya");
-                
-              // }
-            // }
-            // console.log("onlineusers.id===el.name :",Boolean(onlineUsers.id==el.name));
-              // console.log("online users ID :",onlineUsers);
-              // console.log("el name :",el.name);
-
-
+      
             
            
             return (

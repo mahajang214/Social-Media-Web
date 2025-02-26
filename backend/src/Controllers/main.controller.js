@@ -1,8 +1,6 @@
 const Post = require("../Modals/post.modal");
 const User = require("../Modals/user.modal");
-const multer = require('multer');
-const path = require('path');
-const crypto = require('crypto');
+
 module.exports = {
   sendUserInfo: async (req, res) => {
     const userId = req.decode._id;
@@ -18,10 +16,11 @@ module.exports = {
   followUser: async (req, res) => {
     const followingId = req.params.id;
     const userId = req.user._id;
+    const {name,anotherUserName}=req.body;
     try {
       const user = await User.findByIdAndUpdate(
         { _id: userId },
-        { $push: { following: followingId } },
+        { $push: { following: anotherUserName } },
         { new: true }
       );
       if (!user) {
@@ -29,7 +28,7 @@ module.exports = {
       }
       const followingUser = await User.findByIdAndUpdate(
         { _id: followingId },
-        { $push: { follower: userId } },
+        { $push: { follower: name } },
         { new: true }
       );
       if (!followingUser) {

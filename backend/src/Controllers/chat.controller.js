@@ -5,10 +5,7 @@ module.exports = {
   getUsers: async (req, res) => {
     const userId = req.user._id;
     try {
-      const users = await User.find({ _id: { $ne: userId } }).select([
-        "_id",
-        "name",
-      ]);
+      const users = await User.find({ _id: { $ne: userId } }).select(['_id',"name","email","follower","following","posts","bio",,"profilePic"]);
       res.status(200).json({ msg: "all users sended", users });
     } catch (error) {
       console.log(error);

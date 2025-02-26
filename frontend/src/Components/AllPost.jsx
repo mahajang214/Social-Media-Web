@@ -591,6 +591,7 @@ function AllPost() {
           <motion.li
             initial={boxVariants.i}
             animate={boxVariants.s}
+            onClick={()=>navigate('/search')}
             className="px-3  py-2 border-white border-[1px] rounded-xl "
           >
             <svg

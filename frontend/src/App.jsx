@@ -7,6 +7,7 @@ import authStore from "./Store/authStore";
 import ErrorPage from "./Pages/ErrorPage";
 import ImagePage from "./Pages/ImagePage";
 import ProfilePage from "./Pages/ProfilePage";
+import SearchPage from "./Pages/SearchPage";
 
 function App() {
   const { authenticate } = authStore();
@@ -26,6 +27,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* <Route path="/:id" element={<ImagePage />} /> */}
+          <Route path="/search" element={authenticate ? <SearchPage/>: <ErrorPage />}/>
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
