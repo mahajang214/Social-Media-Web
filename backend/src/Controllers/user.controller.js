@@ -61,7 +61,7 @@ module.exports = {
       const user = await User.findOne({
         email,
       }).select(["password", "email", "_id"]);
-      const comparePass =  bcrypt.compare(password, user.password);
+      const comparePass = bcrypt.compare(password, user.password);
       const authToken = jwt.sign(
         { _id: user._id },
         process.env.JWT_SECRET_KEY,
@@ -93,13 +93,15 @@ module.exports = {
     }
   },
   setProfilePic: async (req, res) => {
-    const { profilePic } = req.body;
+    // const { profilePic } = req.body;
+    const uploadProfile = req.file ? `/UsersProfilePic/${req.file.filename}` : null;
+
     const userId = req.user._id;
     try {
-      const user = await User.find({ _id: userId });
-      user.profilePic = profilePic;
-      user.save();
-      res.status(200).json({ msg: "profile pic successful" });
+      const user = await User.findByIdAndUpdate({ _id: userId }, { profilePic: uploadProfile }, { new: true });
+      // user.profilePic = uploadProfile;
+      // user.save();
+      res.status(200).json({ msg: "profile pic successful", uploadProfile });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "profile pic not error" });
@@ -131,4 +133,16 @@ module.exports = {
       return res.status(500).json({ error: "Login secret is not generated" });
     }
   },
-};
+  setInputs: async (req, res) => {
+    const userId = req.user._id;
+    const { name, bio } = req.body;
+    try {
+      const user = await User.findByIdAndUpdate({ _id: userId }, { name, bio }, { new: true });
+
+      res.status(200).json({ msg: "inputs updated successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "inputs is not updated" });
+    }
+  }
+}

@@ -6,6 +6,7 @@ import MainPage from "./Pages/MainPage";
 import authStore from "./Store/authStore";
 import ErrorPage from "./Pages/ErrorPage";
 import ImagePage from "./Pages/ImagePage";
+import ProfilePage from "./Pages/ProfilePage";
 
 function App() {
   const { authenticate } = authStore();
@@ -18,9 +19,12 @@ function App() {
             path="/"
             element={authenticate ? <MainPage /> : <ErrorPage />}
           />
+          <Route
+            path="/profile"
+            element={authenticate ? <ProfilePage /> : <ErrorPage />}
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
           {/* <Route path="/:id" element={<ImagePage />} /> */}
           <Route path="*" element={<ErrorPage />} />
         </Routes>

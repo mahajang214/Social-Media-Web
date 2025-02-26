@@ -16,11 +16,12 @@ const schema = new mongoose.Schema(
       select: false,
       minlength: [8, "password must be 8 characters long"],
     },
-    profilePic: { type: String, require: true },
+    profilePic: { type: String },
     userLoginSecretKey: { type: String, select: false },
     follower: [{ type: String }],
     following: [{ type: String }],
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: Post }],
+    bio:{type:String, default:"Bio"}
   },
   { timestamps: true }
 );

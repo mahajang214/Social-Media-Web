@@ -54,7 +54,7 @@ module.exports = {
   userdata:async (req,res) => {
     const userId=req.user._id;
     try {
-      const user=await User.findOne({ _id: userId });
+      const user=await User.findOne({ _id: userId }).select(['_id',"name","email","follower","following","posts","bio","userLoginSecretKey","profilePic","createdAt"]);
       res.status(200).json({ msg: "user data", user });
       } catch (error) {
         console.log(error);

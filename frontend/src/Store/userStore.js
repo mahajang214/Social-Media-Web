@@ -33,7 +33,7 @@ const userStore = create((set,get) => ({
     },
     load: false,
     setLoad: (e) => set({ load: e }),
-    chat:true,
+    chat:false,
     setChat:(e)=>set({chat:e}),
     addPost:false,
     setAddPost:(e)=>set({addPost:e}),

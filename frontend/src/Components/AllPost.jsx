@@ -3,27 +3,25 @@ import { motion } from "motion/react";
 import userStore from "../Store/userStore";
 import axios from "axios";
 import Loading from "./Loading";
+import { useNavigate } from "react-router-dom";
 
 function AllPost() {
   const { addPost, fromName, setAddPost } = userStore();
   const [file, setFile] = useState(null);
-  const [tempImg, setTempImg] = useState(null);
   const [allposts, setAllposts] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [postData, setPostData] = useState({
-    title: "",
-    subtitle: "",
-    captions: "",
-  });
-
+  const navigate = useNavigate();
   const boxVariants = {
     i: { x: 0, y: 50, scale: 1 },
     s: { x: 0, y: 0, scale: 1, transition: { duration: 0.7 } },
   };
+  // const selectImg= (e) => {
 
-  const fillPostData = (e) => {
-    return setPostData({ ...postData, [e.target.name]: e.target.value });
-  };
+  //   // const fileUrl = URL.createObjectURL(file);
+  //   // console.log("file url : ", fileUrl);
+  //   // console.log("file url : ",URL.createObjectURL(file));
+
+  // }
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
@@ -44,18 +42,17 @@ function AllPost() {
   }, []);
 
   const sendFile = async () => {
-    if (!file || !postData.title || !postData.subtitle || !postData.captions) {
-      return alert("All fields are required");
+    if (!file) {
+      return alert("Please select an image");
     }
     try {
       const formData = new FormData();
       formData.append("image", file); // Changed from 'file' to 'image' to match backend
-      formData.append("title", postData.title);
-      formData.append("subTitle", postData.subtitle);
+      formData.append("title", "demoTitle");
+      formData.append("subTitle", "demoSubTitle");
       formData.append("senderName", fromName);
-      formData.append("caption", postData.captions);
+      formData.append("caption", "Demo captions");
 
-      setLoading(true);
       const res = await axios.post(
         `${import.meta.env.VITE_URL}/api/main/send`,
         formData,
@@ -66,12 +63,8 @@ function AllPost() {
           withCredentials: true,
         }
       );
-      window.location.reload();
       console.log("file path", res.data);
-      setLoading(true);
-
     } catch (error) {
-      setLoading(true);
       console.log(error.message);
     }
   };
@@ -87,7 +80,7 @@ function AllPost() {
       transition={{
         duration: 0.5,
       }}
-      className="w-full h-screen relative overflow-y-scroll px-7  flex flex-col justify-between items-end "
+      className="w-full h-screen relative overflow-y-scroll  flex flex-col justify-between items-end "
     >
       {/* //yeha se lef or right hongs items-start items-end */}
       {loading && <Loading />}
@@ -95,7 +88,7 @@ function AllPost() {
         allposts.map((el, k) => (
           <div
             key={k}
-            className="w-[40vw] cursor-none py-6 mt-10 bg-[#ffffff35] rounded-md px-2"
+            className="w-[40vw] py-6 mt-10 bg-[#ffffff35] rounded-md px-2"
           >
             {console.log(el)}
             <div className="flex w-full gap-5 items-center border-b-[1px] pb-2">
@@ -109,7 +102,7 @@ function AllPost() {
             </div>
             <div
               onDoubleClick={() => console.log("Liked")}
-              className="w-full h-[40vh] cursor-none bg-cover bg-center"
+              className="w-full h-[40vh] bg-cover bg-center"
             >
               {el.image && (
                 <img
@@ -205,32 +198,16 @@ function AllPost() {
           transition={{
             duration: 0.5,
           }}
-          className="w-[40vw] cursor-default backdrop-blur-xl fixed top-[17%] right-[22%] h-[60vh] mt-3  bg-[#ffffff35] rounded-md px-2  "
+          className="w-[40vw] cursor-default backdrop-blur-xl absolute top-[17%] right-[22%] h-[60vh] mt-3  bg-[#ffffff35] rounded-md px-2  "
         >
-          <div className="flex cursor-default  gap-5 items-center border-b-[1px] pb-2 ">
+          <div className="flex  gap-5 items-center border-b-[1px] pb-2 ">
             <div className="flex gap-4  items-center">
               {/* <h1>User name</h1> */}
               <div className="w-[2.5vw] h-[5vh] bg-amber-400 rounded-full"></div>
             </div>
             <div className="flex justify-between items-left flex-col">
-              {/* <h1 className="font-bold text-2xl"></h1> */}
-              <input
-                className="font-bold text-2xl outline-none"
-                onChange={fillPostData}
-                value={postData.title}
-                name="title"
-                type="text"
-                placeholder="Enter Title"
-              />
-              {/* <h3>enter sub-title</h3> */}
-              <input
-                className="outline-none"
-                type="text"
-                onChange={fillPostData}
-                value={postData.subtitle}
-                name="subtitle"
-                placeholder="Enter sub-title"
-              />
+              <h1 className="font-bold text-2xl">Enter Title</h1>
+              <h3>enter sub-title</h3>
             </div>
           </div>
           <div
@@ -240,154 +217,74 @@ function AllPost() {
             //   // console.log("file : ",file);
 
             // }}
-            onClick={() => {
+            onClick={(e) => {
               document.querySelector("#selectFile").click();
             }}
-            onDoubleClick={() => alert("Liked work in progress")}
-            className="w-full h-[70%] border-2 relative border-purple-500 flex flex-col items-center justify-center "
+            onDoubleClick={() => console.log("Liked")}
+            className="w-full h-[70%] border-2 border-purple-500 flex flex-col items-center justify-center "
           >
-            {/* <img
-                  src={`${import.meta.env.VITE_URL}/uploads/${el.image
-                    .split("/")
-                    .pop()}`}
-                  alt={el.title}
-                  className="w-full h-full object-cover rounded-md"
-                  onError={(e) => {
-                    console.log("Image load error:", e);
-                    e.target.src = "fallback-image-url"; // Optional: provide a fallback image
-                  }} */}
-            {tempImg ? (
-              <img src={`${tempImg}`} alt="Temp image"></img>
-            ) : (
-              <form encType="multipart/" method="post">
-                <input
-                  className="hidden"
-                  type="file"
-                  name="image"
-                  id="selectFile"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    setFile(file);
-                    setTempImg(URL.createObjectURL(file));
-                    // console.log("file : ",file);
-                  }}
-                />
-              </form>
-            )}
-            {!tempImg && <h1 className="font-bold mb-3">Select image</h1>}
-            {tempImg && (
-              <button
-                onClick={() => setTempImg("")}
-                className="bg-red-500 absolute top-10 cursor-pointer right-10  px-2 py-1 rounded-md text-white text-2xl"
+            <form encType="multipart/" method="post">
+              <input
+                className="hidden"
+                type="file"
+                name="image"
+                id="selectFile"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  setFile(file);
+                  // console.log("file : ",file);
+                }}
+              />
+            </form>
+            <h1 className="font-bold mb-3">Select image</h1>
+            <svg
+              className="w-[30%] h-[30%]"
+              viewBox="0 0 14 14"
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+            >
+              {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --> */}
+              <title>add post</title>
+              <desc>Created with Sketch.</desc>
+              <g
+                id="Icons"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
               >
-                <svg
-                  className="w-[30px] h-[30px]  "
-                  viewBox="0 0 14 18"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <title>delete_forever</title>
-                  <desc>Created with Sketch.</desc>
-                  <g
-                    id="Icons"
-                    stroke="none"
-                    stroke-Width=".5px"
-                    fill="none"
-                    fill-rule="evenodd"
-                  >
-                    <g
-                      id="Rounded"
-                      transform="translate(-241.000000, -245.000000)"
-                    >
-                      <g
-                        id="Action"
-                        transform="translate(100.000000, 100.000000)"
-                      >
-                        <g
-                          id="-Round-/-Action-/-delete_forever"
-                          transform="translate(136.000000, 142.000000)"
-                        >
-                          <g>
-                            <polygon
-                              id="Path"
-                              points="0 0 24 0 24 24 0 24"
-                            ></polygon>
-                            <path
-                              d="M6,19 C6,20.1 6.9,21 8,21 L16,21 C17.1,21 18,20.1 18,19 L18,9 C18,7.9 17.1,7 16,7 L8,7 C6.9,7 6,7.9 6,9 L6,19 Z M9.17,11.17 C9.56,10.78 10.19,10.78 10.58,11.17 L12,12.59 L13.42,11.17 C13.81,10.78 14.44,10.78 14.83,11.17 C15.22,11.56 15.22,12.19 14.83,12.58 L13.41,14 L14.83,15.42 C15.22,15.81 15.22,16.44 14.83,16.83 C14.44,17.22 13.81,17.22 13.42,16.83 L12,15.41 L10.58,16.83 C10.19,17.22 9.56,17.22 9.17,16.83 C8.78,16.44 8.78,15.81 9.17,15.42 L10.59,14 L9.17,12.58 C8.78,12.2 8.78,11.56 9.17,11.17 Z M15.5,4 L14.79,3.29 C14.61,3.11 14.35,3 14.09,3 L9.91,3 C9.65,3 9.39,3.11 9.21,3.29 L8.5,4 L6,4 C5.45,4 5,4.45 5,5 C5,5.55 5.45,6 6,6 L18,6 C18.55,6 19,5.55 19,5 C19,4.45 18.55,4 18,4 L15.5,4 Z"
-                              id="🔹Icon-Color"
-                              fill="#fff"
-                            ></path>
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </svg>
-              </button>
-            )}
-            {!tempImg && (
-              <svg
-                className="w-[30%] h-[30%]"
-                viewBox="0 0 14 14"
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-              >
-                {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --> */}
-                <title>add post</title>
-                <desc>Created with Sketch.</desc>
                 <g
-                  id="Icons"
-                  stroke="none"
-                  strokeWidth="1"
-                  fill="none"
-                  fillRule="evenodd"
+                  id="Rounded"
+                  transform="translate(-411.000000, -1487.000000)"
                 >
                   <g
-                    id="Rounded"
-                    transform="translate(-411.000000, -1487.000000)"
+                    id="Content"
+                    transform="translate(100.000000, 1428.000000)"
                   >
                     <g
-                      id="Content"
-                      transform="translate(100.000000, 1428.000000)"
+                      id="-Round-/-Content-/-add"
+                      transform="translate(306.000000, 54.000000)"
                     >
-                      <g
-                        id="-Round-/-Content-/-add"
-                        transform="translate(306.000000, 54.000000)"
-                      >
-                        <g transform="translate(0.000000, 0.000000)">
-                          <polygon
-                            id="Path"
-                            points="0 0 24 0 24 24 0 24"
-                          ></polygon>
-                          <path
-                            d="M18,13 L13,13 L13,18 C13,18.55 12.55,19 12,19 C11.45,19 11,18.55 11,18 L11,13 L6,13 C5.45,13 5,12.55 5,12 C5,11.45 5.45,11 6,11 L11,11 L11,6 C11,5.45 11.45,5 12,5 C12.55,5 13,5.45 13,6 L13,11 L18,11 C18.55,11 19,11.45 19,12 C19,12.55 18.55,13 18,13 Z"
-                            id="🔹Icon-Color"
-                            fill="#fff"
-                          ></path>
-                        </g>
+                      <g transform="translate(0.000000, 0.000000)">
+                        <polygon
+                          id="Path"
+                          points="0 0 24 0 24 24 0 24"
+                        ></polygon>
+                        <path
+                          d="M18,13 L13,13 L13,18 C13,18.55 12.55,19 12,19 C11.45,19 11,18.55 11,18 L11,13 L6,13 C5.45,13 5,12.55 5,12 C5,11.45 5.45,11 6,11 L11,11 L11,6 C11,5.45 11.45,5 12,5 C12.55,5 13,5.45 13,6 L13,11 L18,11 C18.55,11 19,11.45 19,12 C19,12.55 18.55,13 18,13 Z"
+                          id="🔹Icon-Color"
+                          fill="#fff"
+                        ></path>
                       </g>
                     </g>
                   </g>
                 </g>
-              </svg>
-            )}
+              </g>
+            </svg>
           </div>
           <div className="w-full h-[17%] flex flex-col justify-between">
-            {/* <div>captions : What's on your mind? Share your thoughts!</div> */}
-            <div>
-              {" "}
-              <textarea
-                className="w-full outline-none"
-                type="text"
-                value={postData.captions}
-                onChange={fillPostData}
-                name="captions"
-                placeholder="Enter captions"
-              />
-            </div>
-
+            <div>captions : What's on your mind? Share your thoughts!</div>
             <button
               onClick={() => sendFile()}
               className="w-full py-1 cursor-pointer text-white rounded-xl  bg-[#00acb5d9] text-2xl"
@@ -398,7 +295,7 @@ function AllPost() {
         </motion.div>
       )}
 
-      <nav className="w-full sticky  bottom-0 py-1 rounded-t-lg text-2xl bg-[#ffffff21] ">
+      <nav className="w-full sticky bottom-0 py-1 rounded-t-lg text-2xl bg-[#ffffff21] ">
         <ul className="flex justify-around items-center w-full h-full">
           <motion.li
             initial={boxVariants.i}
@@ -565,6 +462,7 @@ function AllPost() {
           <motion.li
             initial={boxVariants.i}
             animate={boxVariants.s}
+            onClick={() => navigate("/profile")}
             className="px-3  py-2 border-white border-[1px] rounded-xl "
           >
             <svg

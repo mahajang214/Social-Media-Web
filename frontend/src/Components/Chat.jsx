@@ -6,15 +6,25 @@ import { motion } from "motion/react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { io } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 function Chat() {
-  const { from, to, fromName, toName, setLoad, setChat,setOnlineUsers,onlineUsers } = userStore();
+  const {
+    from,
+    to,
+    fromName,
+    toName,
+    setLoad,
+    setChat,
+    setOnlineUsers,
+    onlineUsers,
+  } = userStore();
   const [allMessages, setAllMessages] = useState(null);
   const [loading, setLoading] = useState(false);
   const [inputData, setInputData] = useState("");
   const [menuAnime, setMenuAnime] = useState(false);
   // const clientSocket=io(`${import.meta.env.VITE_URL}`);
-  const msgRef=useRef(null);
-
+  const msgRef = useRef(null);
+const navigate=useNavigate();
   const socket = useRef(null);
   useEffect(() => {
     const fetchAllMessages = async () => {
@@ -37,25 +47,18 @@ function Chat() {
     });
 
     socket.current.on("newMessage", (msg) => {
-
-      setAllMessages(prev=>[...prev, msg]);
+      setAllMessages((prev) => [...prev, msg]);
       // console.log("msg : ",msg);
-      
     });
-    socket.current.on('onUsers',data=>{
+    socket.current.on("onUsers", (data) => {
       // setOnlineUsers(data);
       // copyFn(data);
       // console.log("",data," is online");
-      
     });
 
-    socket.current.emit('onUsers',fromName);
-
+    socket.current.emit("onUsers", fromName);
 
     // console.log("online users : ",onlineUsers);
-
-    
-
 
     return () => {
       if (socket.current) {
@@ -63,12 +66,12 @@ function Chat() {
       }
     };
   }, [to]);
-  useEffect(()=>{
+  useEffect(() => {
     msgRef.current?.scrollIntoView({ behavior: "smooth" });
-  },[allMessages])
+  }, [allMessages]);
   const sendMessage = async () => {
-    if(inputData===''){
-      alert('Please enter a message');
+    if (inputData === "") {
+      alert("Please enter a message");
       return;
     }
     try {
@@ -246,7 +249,7 @@ function Chat() {
               x: 0,
             }}
             transition={{ duration: 0.5 }}
-            className="absolute backdrop-blur-xs cursor-context-menu top-0 right-0 w-[30vh] h-full bg-[#00acb5d9] "
+            className="fixed backdrop-blur-xs cursor-context-menu top-14 right-0 w-[30vh] h-[89.3%] bg-[#00acb5d9] "
           >
             <button
               id="mbtn"
@@ -304,6 +307,7 @@ function Chat() {
             </button>
             <button
               id="mbtn"
+              onClick={()=>navigate('/profile')}
               className="w-full py-2 text-2xl flex justify-center   bg-[#ffffff31] rounded-xl mt-5 cursor-pointer "
             >
               <svg

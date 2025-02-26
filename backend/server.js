@@ -10,7 +10,6 @@ const chatRoute = require("./src/Routes/chatRoutes");
 const connectDB = require("./src/Database/db");
 const {createServer}=require('http');
 const socketIo = require("socket.io");
-
 const web = express();
 const httpServer=createServer(web);
 const socketServer=socketIo(httpServer,{
@@ -34,7 +33,8 @@ web.use(
   })
 );
 
-// Add this line before your routes
+// Serve both directories for different purposes
+web.use('/uploads/UsersProfilePic', express.static(path.join(__dirname, 'src/Upload_Data/UsersProfilePic')));
 web.use('/uploads', express.static(path.join(__dirname, 'src/Upload_Data')));
 
 web.use("/api/auth", authRoutes);
