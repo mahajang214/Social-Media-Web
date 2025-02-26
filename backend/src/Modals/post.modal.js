@@ -13,7 +13,7 @@ const postSchema = new mongoose.Schema(
       required: true,
     },
     like: [{ type: String }],
-    comments: [{ type: String }],
+    comments: [{ type: Object }],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     userPic: { type: String, required: true }
   },

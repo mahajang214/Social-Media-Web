@@ -94,17 +94,23 @@ module.exports = {
     // console.log("params id : ",req.params.id)
     try {
 
-      const findPostIsLikedByUser=await Post.findById({_id:likedPostId});
-      const likeArr=findPostIsLikedByUser.like;
-      likeArr.forEach((el)=>{
-        if(el.toString()===jisneLikeKiHE){
-          return res.status(409).json({ error: "you already liked this post" });
+      const findPostIsLikedByUser = await Post.findById({ _id: likedPostId });
+      const likeArr = findPostIsLikedByUser.like;
+      for (let i = likeArr.length - 1; i >= 0; i--) {
+        if (likeArr[i].toString() === jisneLikeKiHE) {
+          // likeArr.splice(i, 1); // Remove the element at index `i`
+          const findLikePost = await Post.findByIdAndUpdate({ _id: likedPostId }, {
+            $pull: { like: jisneLikeKiHE }
+          }, { new: true });
+          if (!findLikePost) {
+            return res.status(500).json({ error: "Un-like is not worked " });
           }
-      })
-      // console.log("like : ",findPostIsLikedByUser.like)
-      // if (findPostIsLikedByUser.id===jisneLikeKiHE) {
-      //   return res.status(400).json({ error: "you already liked this post" });
-      // }
+          return res.status(200).json({ msg: "Unliked successful" });
+        }
+
+      }
+
+
       const findLikePost = await Post.findByIdAndUpdate({ _id: likedPostId }, {
         $push: { like: jisneLikeKiHE }
       }, { new: true });
@@ -127,7 +133,7 @@ module.exports = {
     try {
       const findLikePost = await Post.findByIdAndUpdate({ _id: unlikePost }, {
         $pull: { like: userId }
-      });
+      }, { new: true });
       if (!findLikePost) {
         res.status(500).json({ error: "Un-like is not worked " });
       }
@@ -143,7 +149,7 @@ module.exports = {
   },
   commentOnPost: async (req, res) => {
     const userId = req.user._id;
-    const { postId } = req.params.id;
+    const  postId  = req.params.id;
     const { commentData, name } = req.body;
     try {
       const commentPost = await Post.findByIdAndUpdate({ _id: postId }, {

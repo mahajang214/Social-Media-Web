@@ -8,10 +8,12 @@ import postStore from "../Store/postStore";
 
 function AllPost() {
   const { addPost, fromName, setAddPost, userProfilePicture } = userStore();
-  const {setPostId,postId}=postStore();
+  const { setPostId, postId } = postStore();
   const [file, setFile] = useState(null);
   const [allposts, setAllposts] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [openComment, setOpenComment] = useState(false);
+  const [commentText, setCommentText] = useState("");
   const [postData, setPostData] = useState({
     title: "",
     subtitle: "",
@@ -41,6 +43,9 @@ function AllPost() {
         );
         setAllposts(response.data.allposts);
         setLoading(false);
+        // console.log("comment text",allposts.comments)
+        // console.log("commented by ",response.data.allposts.comments.commentedBy)
+
       } catch (error) {
         setLoading(false);
 
@@ -91,29 +96,47 @@ function AllPost() {
     setPostData({ ...postData, [e.target.name]: e.target.value });
   };
 
-  const like=async(id)=>{
+  const like = async (id) => {
     // console.log(id)
     try {
-      const res=await axios.post(`${import.meta.env.VITE_URL}/api/main/like/${id}`,{likedBy:fromName},  { 
-        headers:{
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': true,
-          'Access-Control-Allow-Methods': 'GET, POST',
-          'Access-Control-Allow-Headers': 'Content-Type',
-      },
-      withCredentials:true
-       });
-      alert(`${res.data.error}`);
+      const res = await axios.post(
+        `${import.meta.env.VITE_URL}/api/main/like/${id}`,
+        { likedBy: fromName },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": true,
+            "Access-Control-Allow-Methods": "GET, POST",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+          withCredentials: true,
+        }
+      );
+      alert(`${res.data.msg}`);
       console.log(res.data);
-
-
     } catch (error) {
       alert(`${error.messages}`);
-      console.log(error.message)
-      
-      
+      console.log(error.message);
     }
-  }
+  };
+  const sendComment = async (id) => {
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        `${import.meta.env.VITE_URL}/api/main/comment/${id}`,
+        { commentData: commentText, name: fromName },
+        {
+          withCredentials: true,
+        }
+      );
+      setLoading(false);
+
+      console.log(res.data);
+    } catch (error) {
+      setLoading(false);
+      console.log(error.message);
+    }
+  };
 
   return (
     <motion.div
@@ -134,12 +157,16 @@ function AllPost() {
         allposts.map((el, k) => (
           <div
             key={k}
-            className="w-[40vw] py-6 mt-10 bg-[#ffffff35]  rounded-md px-2"
+            className="w-[40vw]  py-6 mt-10 bg-[#ffffff35]  rounded-md px-2"
           >
-            {console.log(el)}
-            <div className="flex w-full gap-5 items-center border-b-[1px] pb-2">
-              <div className="flex gap-4 items-center">
-                <div className="w-[2.5vw] h-[5vh] bg-cover overflow-hidden bg-amber-400 rounded-full">
+            {/* {el.comments.forEach(elem => {
+              console.log("text:",elem.text)
+              console.log("commentedBy:",elem.commentedBy)
+
+            })} */}
+            <div className="flex w-full   gap-5 items-center border-b-[1px] pb-2">
+              <div className="flex gap-4  items-center">
+                <div className="w-[2.5vw]  h-[5vh] bg-cover overflow-hidden bg-amber-400 rounded-full">
                   {el.userPic ? (
                     <img
                       src={`${
@@ -157,7 +184,7 @@ function AllPost() {
               </div>
             </div>
             <div
-              onDoubleClick={() => console.log("Liked")}
+              onDoubleClick={() => like(el._id)}
               className="w-full h-[40vh] bg-cover bg-center"
             >
               {el.image && (
@@ -174,15 +201,17 @@ function AllPost() {
                 />
               )}
             </div>
-            <div className="w-full h-[20%] flex flex-col justify-between">
+            <div className="w-full h-[20%]  flex flex-col justify-between">
               <div className="flex-1">{el.captions}</div>
               <div className="flex gap-5 items-center">
-                <button onClick={(e)=>{
-                  // setPostId(el._id);
-                  like(el._id);
-                  // console.log("el id :",el._id);
-                  
-                }} className="ml-3 hover:translate-y-[-10px] hover:scale-125 transition-all cursor-pointer">
+                <button
+                  onClick={(e) => {
+                    // setPostId(el._id);
+                    like(el._id);
+                    // console.log("el id :",el._id);
+                  }}
+                  className="ml-3 hover:translate-y-[-10px] hover:scale-125 transition-all cursor-pointer"
+                >
                   {true ? (
                     <svg
                       className="w-[30px] h-[30px]"
@@ -214,7 +243,10 @@ function AllPost() {
                   )}
                   <span className="text-gray-200">{el.like.length} </span>
                 </button>
-                <button onClick={()=>setPostId(el._id)} className="ml-5 cursor-pointer hover:translate-y-[-10px] hover:scale-125 transition-all">
+                <button
+                  onClick={() => setOpenComment(!openComment)}
+                  className="ml-5 cursor-pointer hover:translate-y-[-10px] hover:scale-125 transition-all"
+                >
                   <svg
                     version="1.1"
                     className="w-[25px] h-[25px]"
@@ -240,6 +272,50 @@ function AllPost() {
                   <span className="text-gray-200">{el.comments.length}</span>
                 </button>
               </div>
+
+              {openComment && (
+                <motion.div
+                  initial={{
+                    scaleY: 0,
+                  }}
+                  animate={{
+                    scaleY: 1,
+                  }}
+                  transition={{ duration: 0.5 }}
+                  className="w-full relative  h-[30vh]  "
+                >
+                  <h4 className="text-center ">Comments</h4>
+                  <div  className="w-full overflow-auto h-full">
+                  {el.comments.map((elem,i) => (
+                      <div key={i} className="text-xl mt-3 bg-[#00000070] px-2 py-1 rounded-md border-2">
+                        <h3 className="text-purple-500 underline">
+                          {elem.commentedBy}
+                        </h3>
+                        <h4 className="w-full h-[6vh] overflow-auto">
+                          {elem.text}
+                        </h4>
+                      </div>
+                  ))}
+                  <div className="w-full flex justify-between items-center sticky bottom-0 py-1">
+                    <input
+                      onChange={(e) => setCommentText(e.target.value)}
+                      type="text"
+                      placeholder="Write a comment"
+                      className="w-full outline-none p-2 rounded-l-xl bg-[#fafafa3b]"
+                    />
+                    <button
+                      onClick={() => {
+                        sendComment(el._id);
+                      }}
+                      className="px-3  py-2 rounded-r-xl bg-[#34de21a1]"
+                    >
+                      Send
+                    </button>
+                  </div>
+                  </div>
+                  
+                </motion.div>
+              )}
             </div>
           </div>
         ))}
@@ -307,7 +383,7 @@ function AllPost() {
             onClick={(e) => {
               document.querySelector("#selectFile").click();
             }}
-            onDoubleClick={() => console.log("Liked")}
+            onDoubleClick={() => like()}
             className="w-full h-[70%] border-2 relative border-purple-500 flex flex-col items-center justify-center "
           >
             {tempPic ? (
@@ -338,7 +414,7 @@ function AllPost() {
                   viewBox="0 0 14 14"
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
-                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
                 >
                   {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --> */}
                   <title>add post</title>
@@ -470,7 +546,7 @@ function AllPost() {
               viewBox="0 0 14 14"
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
             >
               {/* <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --> */}
               <title>add post</title>
