@@ -5,8 +5,26 @@ module.exports = {
   getUsers: async (req, res) => {
     const userId = req.user._id;
     try {
-      const users = await User.find({ _id: { $ne: userId } }).select(['_id',"name","email","follower","following","posts","bio",,"profilePic"]);
+      const users = await User.find({ _id: { $ne: userId } }).select(['_id', "name", "follower", "following", "posts", "bio", "profilePic"]);
       res.status(200).json({ msg: "all users sended", users });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "all users sended" });
+    }
+  },
+  getFollowingAndFollower: async (req, res) => {
+    const userId = req.user._id;
+    try {
+      const myself = await User.findById(userId);
+      const following = await User.find({ name: { $in: myself.following } });
+      const follower = await User.find({ name: { $in: myself.follower } });
+      // console.log("follower:",follower);
+      // console.log("following:",following);
+
+      
+      // const users = await User.find({ $and: [ _id: { $ne: userId }], }).select(['_id', "name", "follower", "following", "posts", "bio", "profilePic"]);
+
+      res.status(200).json({ msg: "all following and followers sended", follower,following });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "all users sended" });
@@ -17,14 +35,14 @@ module.exports = {
     const userId = req.user._id;
     const reciever = req.params.id;
     // console.log("reciever id : ",req.params.id);
-    
+
     try {
       const findReciever = await User.find({ _id: reciever });
       if (!findReciever) {
         return res.status(404).json({ error: "user not found" });
       }
       const newMessage = await Message.create({
-        from: userId, 
+        from: userId,
         to: reciever,
         text,
         image: image ? image : null,
@@ -40,7 +58,7 @@ module.exports = {
     const reciever = req.params.id;
     try {
       const messages = await Message.find(
-      {  $or:[{ from: userId, to: reciever }, { from: reciever, to: userId }]}
+        { $or: [{ from: userId, to: reciever }, { from: reciever, to: userId }] }
       );
       res.status(200).json({ msg: "all messages founded", messages });
     } catch (err) {
@@ -48,15 +66,15 @@ module.exports = {
       res.status(500).json({ error: "messages not found" });
     }
   },
-  userdata:async (req,res) => {
-    const userId=req.user._id;
+  userdata: async (req, res) => {
+    const userId = req.user._id;
     try {
-      const user=await User.findOne({ _id: userId }).select(['_id',"name","email","follower","following","posts","bio","userLoginSecretKey","profilePic","createdAt"]);
+      const user = await User.findOne({ _id: userId }).select(['_id', "name", "email", "follower", "following", "posts", "bio", "userLoginSecretKey", "profilePic", "createdAt"]);
       res.status(200).json({ msg: "user data", user });
-      } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "user data" });
-        }
-    
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "user data" });
+    }
+
   }
 };

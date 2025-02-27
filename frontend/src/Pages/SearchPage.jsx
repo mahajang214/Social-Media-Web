@@ -25,7 +25,7 @@ function SearchPage() {
         );
         setData(fetchdata.data.users);
 
-        // console.log(fetchdata.data.users);
+        console.log(fetchdata.data.users);
         // fetchdata.data.users.forEach((elem, key) => {
         //   if (elem.follower.includes(fromName)) {
         //     setIsUserFollowing(true);
@@ -194,9 +194,24 @@ function SearchPage() {
                     key={key}
                     className="w-full justify-around bg-[#ffffff3c] items-center gap-4 py-2 relative  overflow-hidden flex  mt-9.5 rounded-lg"
                   >
-                    <div className="h-full  ">
-                      <h1 className="text-xl text-red-400">{elem.name}</h1>
-                      <p className=" overflow-auto ">{elem.bio}</p>
+                    <div className="h-full  flex gap-2  items-center">
+                      <div className="w-[3vw] h-[5.5vh] overflow-hidden border-[1px] border-pink-400 rounded-full">
+                        {elem.profilePic ? (
+                          <img
+                            src={`${
+                              import.meta.env.VITE_URL
+                            }/uploads/UsersProfilePic/${elem.profilePic
+                              .split("/")
+                              .pop()}`}
+                            alt="profile pic"
+                            className="w-full h-full bg-cover"
+                          />
+                        ) : null}
+                      </div>{" "}
+                      <div>
+                        <h1 className="text-xl text-red-400">{elem.name}</h1>
+                        <p className=" overflow-auto ">{elem.bio}</p>
+                      </div>
                     </div>
                     <div className="flex gap-7   ">
                       <div>
@@ -251,9 +266,25 @@ function SearchPage() {
                   key={k}
                   className="w-full justify-around bg-[#ffffff3c] items-center gap-4 py-2 relative  overflow-hidden flex  mt-9.5 rounded-lg"
                 >
-                  <div className="h-full  ">
-                    <h1 className="text-xl text-red-400">{el.name}</h1>
-                    <p className=" overflow-auto ">{el.bio}</p>
+                  <div className="h-full  flex gap-2  items-center">
+                    <div className="w-[3vw] h-[5.5vh] overflow-hidden border-[1px] border-pink-400 rounded-full">
+                      {el.profilePic ? (
+                        <img
+                          src={`${
+                            import.meta.env.VITE_URL
+                          }/uploads/UsersProfilePic/${el.profilePic
+                            .split("/")
+                            .pop()}`}
+                          alt="profile pic"
+                          className="w-full h-full bg-cover"
+                        />
+                      ) : null}
+                    </div>
+                    <div>
+                      {" "}
+                      <h1 className="text-xl text-red-400">{el.name}</h1>
+                      <p className=" overflow-auto ">{el.bio}</p>
+                    </div>
                   </div>
                   <div className="flex gap-7   ">
                     <div>
