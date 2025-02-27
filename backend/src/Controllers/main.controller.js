@@ -16,30 +16,55 @@ module.exports = {
   followUser: async (req, res) => {
     const followingId = req.params.id;
     const userId = req.user._id;
-    const {name,anotherUserName}=req.body;
+    const { name, anotherUserName } = req.body;
     try {
-      const user = await User.findByIdAndUpdate(
-        { _id: userId },
-        { $push: { following: anotherUserName } },
-        { new: true }
-      );
-      if (!user) {
-        return res.status(500).json({ error: "user data is not updated" });
+      const u1 = await User.findById(userId);
+      const u1following = u1.following;
+      if (u1following.includes(anotherUserName)) {
+        const user = await User.findByIdAndUpdate(
+          { _id: userId },
+          { $pull: { following: anotherUserName } },
+          { new: true }
+        );
+        if (!user) {
+          return res.status(500).json({ error: "user data is not updated" });
+        }
+        const followingUser = await User.findByIdAndUpdate(
+          { _id: followingId },
+          { $pull: { follower: name } },
+          { new: true }
+        );
+        if (!followingUser) {
+          return res.status(500).json({ error: "user data is not updated", });
+        }
+        return res.status(200).json({ msg: "Unfollowed" });
       }
-      const followingUser = await User.findByIdAndUpdate(
-        { _id: followingId },
-        { $push: { follower: name } },
-        { new: true }
-      );
-      if (!followingUser) {
-        return res.status(500).json({ error: "user data is not updated" });
-      }
-      res.status(200).json({ msg: "user is followed" });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: "Something went wrong" });
+    } catch (error) {
+      console.log(error);
     }
-  },
+      try {
+        const user = await User.findByIdAndUpdate(
+          { _id: userId },
+          { $push: { following: anotherUserName } },
+          { new: true }
+        );
+        if (!user) {
+          return res.status(500).json({ error: "user data is not updated" });
+        }
+        const followingUser = await User.findByIdAndUpdate(
+          { _id: followingId },
+          { $push: { follower: name } },
+          { new: true }
+        );
+        if (!followingUser) {
+          return res.status(500).json({ error: "user data is not updated", });
+        }
+        res.status(200).json({ msg: "followed" });
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Something went wrong" });
+      }
+    },
   sendPost: async (req, res) => {
     const userId = req.user._id;
     try {
@@ -148,7 +173,7 @@ module.exports = {
   },
   commentOnPost: async (req, res) => {
     const userId = req.user._id;
-    const  postId  = req.params.id;
+    const postId = req.params.id;
     const { commentData, name } = req.body;
     try {
       const commentPost = await Post.findByIdAndUpdate({ _id: postId }, {
@@ -166,5 +191,19 @@ module.exports = {
       return res.status(500).json({ error: "comment is not working" });
     }
   },
+  searchUser:async (req,res) => {
+    // const userId = req.user._id;
+    const search = req.params.id;
+    try {
+      const findUser = await User.find({ name: { $regex: search, $options: 'i' } });
+      if (!findUser) {
+        res.status(500).json({ error: "search is not working" });
+        }
+        return res.status(200).json({ msg: "search is successfull", findUser });
+    } catch (error) {
+      console.log(error);
+      return res.status(404).json({ error: "User is not found" });
+    }
+  }
 
 };

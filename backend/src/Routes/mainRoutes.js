@@ -3,7 +3,7 @@ const path = require('path');
 const crypto = require('crypto');
 const fs = require('fs');
 const { protectedRoute } = require('../Middlewares/protected');
-const { followUser, sendPost, getAllPosts, likePost, unlikePost, commentOnPost } = require('../Controllers/main.controller');
+const { followUser, sendPost, getAllPosts, likePost, unlikePost, commentOnPost, searchUser } = require('../Controllers/main.controller');
 const multer = require('multer');
 // const { upload } = require('../Utilities/utils');
 // const uploadRepo=require('../Upload_Data/')
@@ -50,5 +50,6 @@ router.get('/', protectedRoute, getAllPosts);
 router.post('/like/:id', protectedRoute, likePost);
 router.post('/unlike/:id', protectedRoute, unlikePost);
 router.post('/comment/:id', protectedRoute, commentOnPost);
+router.get('/search/:id',protectedRoute,searchUser);
 
 module.exports = router;
