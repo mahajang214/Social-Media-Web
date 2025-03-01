@@ -6,6 +6,7 @@ import axios from "axios";
 import { motion } from "motion/react";
 import userStore from "../Store/userStore";
 import { useNavigate } from "react-router-dom";
+import NavigationBar from "../Components/NavigationBar";
 
 function SearchPage() {
   const [data, setData] = useState(null);
@@ -145,12 +146,6 @@ function SearchPage() {
         ></div>
       </div>
       <div className="w-2/4 h-full relative text-white">
-        <button
-          onClick={() => navigator("/")}
-          className="px-4 py-1 bg-[#ffffff3c] absolute top-0 left-0 cursor-pointer  rounded-md "
-        >
-          Back
-        </button>
         <div className="w-full py-2 mt-16.5 flex justify-between items-center">
           <input
             onChange={(e) => setSearch(e.target.value)}
@@ -164,6 +159,7 @@ function SearchPage() {
           >
             search
           </button>
+          
         </div>
 
         <div className="w-full h-full overflow-y-scroll">
@@ -325,6 +321,8 @@ function SearchPage() {
             })
           )}
         </div>
+      <NavigationBar cl={`sticky bottom-0`} />
+
 
         {/* {loading && <Loading />} */}
       </div>

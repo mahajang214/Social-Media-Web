@@ -2,6 +2,7 @@ import axios from "axios";
 import { motion } from "motion/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import NavigationBar from "../Components/NavigationBar";
 
 function ProfilePage() {
   const [data, setData] = useState("");
@@ -97,9 +98,9 @@ function ProfilePage() {
         opacity: 1,
       }}
       transition={{ duration: 0.5 }}
-      className="w-full flex justify-center text-white items-center h-screen bg-[#1A1A19]"
+      className="w-full flex relative justify-center flex-col text-white items-center h-screen bg-[#1A1A19]"
     >
-      <div className="w-2/3 py-5 rounded-lg px-4  bg-[#ffffff20] ">
+      <div className="w-2/3 py-5 rounded-lg px-4  mb-3 bg-[#ffffff20] ">
         <h1 className="text-7xl  text-center">Profile </h1>
         <div className="w-full py-4 flex justify-between relative items-center">
           <div className="w-1/2 h-full flex relative justify-center items-center ">
@@ -291,12 +292,6 @@ function ProfilePage() {
           </button>
         </div>
 
-        <button
-          onClick={() => navigate("/")}
-          className="w-[10vw] border-2 fixed left-4 cursor-pointer top-4 border-red-500 rounded-md text-red-500"
-        >
-          Back to home page
-        </button>
         {isSecretClicked && (
           <motion.div
             initial={{
@@ -338,6 +333,8 @@ function ProfilePage() {
           </motion.div>
         )}
       </div>
+      <NavigationBar  cl={`sticky  bottom-0  `} />
+
     </motion.div>
   );
 }

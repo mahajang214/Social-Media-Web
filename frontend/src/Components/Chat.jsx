@@ -13,10 +13,7 @@ function Chat() {
     to,
     fromName,
     toName,
-    setLoad,
     setChat,
-    setOnlineUsers,
-    onlineUsers,
   } = userStore();
   const [allMessages, setAllMessages] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -50,13 +47,12 @@ const navigate=useNavigate();
       setAllMessages((prev) => [...prev, msg]);
       // console.log("msg : ",msg);
     });
-    socket.current.on("onUsers", (data) => {
-      // setOnlineUsers(data);
-      // copyFn(data);
-      // console.log("",data," is online");
-    });
+    // socket.current.on("onUsers", (data) => {
+    //   // setOnlineUsers(data);
+    //   // copyFn(data);
+    //   // console.log("",data," is online");
+    // });
 
-    socket.current.emit("onUsers", fromName);
 
     // console.log("online users : ",onlineUsers);
 
@@ -65,11 +61,13 @@ const navigate=useNavigate();
         socket.current.disconnect();
       }
     };
+   
   }, [to]);
   useEffect(() => {
     msgRef.current?.scrollIntoView({ behavior: "smooth" });
+
   }, [allMessages]);
-  const sendMessage = async () => {
+  const sendMessageFn = async () => {
     if (inputData === "") {
       alert("Please enter a message");
       return;
@@ -362,7 +360,7 @@ const navigate=useNavigate();
           placeholder="Hey there type something"
           value={inputData}
         />
-        <button onClick={sendMessage} className="px-3 cursor-pointer ">
+        <button onClick={sendMessageFn} className="px-3 cursor-pointer ">
           <svg
             version="1.1"
             id="Icons"

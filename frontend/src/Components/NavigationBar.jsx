@@ -1,19 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import Loading from "./Loading";
-import NavigationBar from "./NavigationBar";
 import { motion } from "motion/react";
-import userStore from "../Store/userStore";
-import { io } from "socket.io-client";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-function AllPost() {
-  const [allposts, setAllposts] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [openComment, setOpenComment] = useState(false);
-  const [commentText, setCommentText] = useState("");
-  const socket2 = useRef(null);
+import userStore from "../Store/userStore";
+import axios from "axios";
+
+function NavigationBar({ cl }) {
   const { addPost, fromName, setAddPost, userProfilePicture } = userStore();
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const [postData, setPostData] = useState({
     title: "",
@@ -25,85 +20,7 @@ function AllPost() {
     i: { x: 0, y: 50, scale: 1 },
     s: { x: 0, y: 0, scale: 1, transition: { duration: 0.7 } },
 
-  };
-  // console.log("url 2 : ",import.meta.env.VITE_URL2);
-  useEffect(() => {
-    const fetchAllPosts = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `${import.meta.env.VITE_URL}/api/main`,
-          { withCredentials: true }
-        );
-        setAllposts(response.data.allposts);
-        setLoading(false);
-        // console.log("Posts : ",response.data.allposts);
-      } catch (error) {
-        setLoading(false);
-        console.log(error);
-      }
-    };
-    fetchAllPosts();
-    socket2.current = io(`${import.meta.env.VITE_URL2}`, {
-      withCredentials: true,
-    });
-    socket2.current.on("sendComment", (comment) => {
-      console.log("socket 2 comment : ", comment);
-    });
-    socket2.current.on('sendPost',post=>{
-      console.log("Socket 2 post received : ",post);
-      // setAllposts(...allposts,post);
-    })
-    return () => {
-      if (socket2.current) {
-        socket2.current.disconnect();
-      }
-    };
-  }, []);
-
-  const like = async (id) => {
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_URL}/api/main/like/${id}`,
-        { likedBy: fromName },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": true,
-            "Access-Control-Allow-Methods": "GET, POST",
-            "Access-Control-Allow-Headers": "Content-Type",
-          },
-          withCredentials: true,
-        }
-      );
-      alert(`${res.data.msg}`);
-      console.log(res.data);
-    } catch (error) {
-      alert(`${error.messages}`);
-      console.log(error.message);
-    }
-  };
-  const sendComment = async (id) => {
-    try {
-      setLoading(true);
-      socket2.current.emit("sendComment", commentText);
-      const res = await axios.post(
-        `${import.meta.env.VITE_URL}/api/main/comment/${id}`,
-        { commentData: commentText, name: fromName },
-        {
-          withCredentials: true,
-        }
-      );
-      setLoading(false);
-      console.log(res.data);
-    } catch (error) {
-      setLoading(false);
-      console.log(error.message);
-    }
-  };
-
- 
-   const captureChange = (e) => {
+  }; const captureChange = (e) => {
     setPostData({ ...postData, [e.target.name]: e.target.value });
   };
   const sendFile = async () => {
@@ -119,7 +36,6 @@ function AllPost() {
       formData.append("senderName", fromName);
       formData.append("caption", postData.captions);
       formData.append("upic", userProfilePicture);
-      socket2.current.emit("sendPost",formData);
       const res = await axios.post(
         `${import.meta.env.VITE_URL}/api/main/send`,
         formData,
@@ -140,184 +56,7 @@ function AllPost() {
   };
 
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-      }}
-      animate={{
-        opacity: 1,
-      }}
-      transition={{
-        duration: 0.5,
-      }}
-      className="w-full h-screen relative overflow-y-scroll  flex flex-col justify-between items-center "
-    >
-      {/* //yeha se lef or right hongs items-start items-end */}
-      {loading && <Loading />}
-      {allposts &&
-        allposts.map((el, k) => (
-          <div
-            key={k}
-            className="w-[40vw]  py-6 mt-10 bg-[#ffffff35]  rounded-md px-2"
-          >
-            <div className="flex w-full   gap-5 items-center border-b-[1px] pb-2">
-              <div className="flex gap-4  items-center">
-                <div className="w-[2.5vw]  h-[5vh] bg-cover overflow-hidden bg-amber-400 rounded-full">
-                  {el.userPic ? (
-                    <img
-                      src={`${
-                        import.meta.env.VITE_URL
-                      }/uploads/UsersProfilePic/${el.userPic.split("/").pop()}`}
-                      alt="profile pic"
-                      className="w-full h-full bg-cover"
-                    />
-                  ) : null}
-                </div>
-              </div>
-              <div className="flex justify-between items-left flex-col">
-                <h1 className="font-bold text-2xl">{el.title}</h1>
-                <h3>{el.subTitle}</h3>
-              </div>
-            </div>
-            <div
-              onDoubleClick={() => like(el._id)}
-              className="w-full h-[50vh] bg-cover bg-center"
-            >
-              {el.image && (
-                <img
-                  src={`${import.meta.env.VITE_URL}/uploads/${el.image
-                    .split("/")
-                    .pop()}`}
-                  alt={el.title}
-                  className="w-full cursor-default h-full object-cover rounded-md"
-                  onError={(e) => {
-                    console.log("Image load error:", e);
-                    e.target.src = "fallback-image-url"; // Optional: provide a fallback image
-                  }}
-                />
-              )}
-            </div>
-            <div className="w-full h-[15%]  flex flex-col justify-between">
-              <div className="flex-1">{el.captions}</div>
-              <div className="flex gap-5 items-center">
-                <button
-                  onClick={(e) => {
-                    like(el._id);
-                  }}
-                  className="ml-3 hover:translate-y-[-10px] hover:scale-125 transition-all cursor-pointer"
-                >
-                  {true ? (
-                    <svg
-                      className="w-[30px] h-[30px]"
-                      version="1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 48 48"
-                      enableBackground="new 0 0 48 48"
-                    >
-                      <path
-                        fill="#2C3930"
-                        stroke="#fff"
-                        d="M34,9c-4.2,0-7.9,2.1-10,5.4C21.9,11.1,18.2,9,14,9C7.4,9,2,14.4,2,21c0,11.9,22,24,22,24s22-12,22-24 C46,14.4,40.6,9,34,9z"
-                      ></path>
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-[30px] h-[30px]"
-                      version="1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 48 48"
-                      enableBackground="new 0 0 48 48"
-                    >
-                      <path
-                        fill="#050505"
-                        stroke="#fff"
-                        d="M34,9c-4.2,0-7.9,2.1-10,5.4C21.9,11.1,18.2,9,14,9C7.4,9,2,14.4,2,21c0,11.9,22,24,22,24s22-12,22-24 C46,14.4,40.6,9,34,9z"
-                      ></path>
-                    </svg>
-                  )}
-                  <span className="text-gray-200">{el.like.length} </span>
-                </button>
-                <button
-                  onClick={() => setOpenComment(!openComment)}
-                  className="ml-5 cursor-pointer hover:translate-y-[-10px] hover:scale-125 transition-all"
-                >
-                  <svg
-                    version="1.1"
-                    className="w-[25px] h-[25px]"
-                    fill="#fff"
-                    id="Icons"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlnsXlink="http://www.w3.org/1999/xlink"
-                    x="0px"
-                    y="0px"
-                    viewBox="0 0 32 32"
-                    xmlSpace="preserve"
-                  >
-                    <path
-                      d="M19,2H5C3.3,2,2,3.3,2,5v17c0,0.4,0.2,0.7,0.5,0.9C2.7,23,2.8,23,3,23c0.2,0,0.4-0.1,0.5-0.2L11,18h8c1.7,0,3-1.3,3-3V5
-	C22,3.3,20.7,2,19,2z M10,13H8c-0.6,0-1-0.4-1-1s0.4-1,1-1h2c0.6,0,1,0.4,1,1S10.6,13,10,13z M13,9H8C7.4,9,7,8.6,7,8s0.4-1,1-1h5
-	c0.6,0,1,0.4,1,1S13.6,9,13,9z"
-                    ></path>
-                    <path
-                      d="M27,9h-3v6c0,2.8-2.2,5-5,5h-7.4L10,21v1c0,1.7,1.3,3,3,3h8l7.5,4.8c0.2,0.1,0.4,0.2,0.5,0.2c0.2,0,0.3,0,0.5-0.1
-	c0.3-0.2,0.5-0.5,0.5-0.9V12C30,10.3,28.7,9,27,9z"
-                    ></path>
-                  </svg>
-                  <span className="text-gray-200">{el.comments.length}</span>
-                </button>
-              </div>
-
-              {openComment && (
-                <motion.div
-                  initial={{
-                    scaleY: 0,
-                  }}
-                  animate={{
-                    scaleY: 1,
-                  }}
-                  transition={{ duration: 0.5 }}
-                  className="w-full relative  h-[30vh]  "
-                >
-                  <h4 className="text-center ">Comments</h4>
-                  <div className="w-full overflow-auto h-full">
-                    {el.comments.map((elem, i) => (
-                      <div
-                        key={i}
-                        className="text-xl mt-3 bg-[#00000070] px-2 py-1 rounded-md border-2"
-                      >
-                        <h3 className="text-purple-500 underline">
-                          {elem.commentedBy}
-                        </h3>
-                        <h4 className="w-full h-[6vh] overflow-auto">
-                          {elem.text}
-                        </h4>
-                      </div>
-                    ))}
-                    <div className="w-full flex justify-between items-center sticky bottom-0 py-1">
-                      <input
-                        onChange={(e) => setCommentText(e.target.value)}
-                        type="text"
-                        placeholder="Write a comment"
-                        className="w-full outline-none p-2 rounded-l-xl bg-[#fafafa3b]"
-                      />
-                      <button
-                        onClick={() => {
-                          sendComment(el._id);
-                        }}
-                        className="px-3  py-2 rounded-r-xl bg-[#34de21a1]"
-                      >
-                        Send
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </div>
-        ))}
-      {/* <div ref={viewBox}></div> */}
-
-      <nav className={`w-full py-1 rounded-t-lg text-2xl bg-[#ffffff21] `}>
+    <nav className={`w-full py-1 rounded-t-lg text-2xl bg-[#ffffff21] ${cl}`}>
       <ul className="flex justify-around items-center w-full h-full">
         <motion.li
           initial={boxVariants.i}
@@ -657,8 +396,7 @@ function AllPost() {
         </motion.div>
       )}
     </nav>
-    </motion.div>
   );
 }
 
-export default AllPost;
+export default NavigationBar;
